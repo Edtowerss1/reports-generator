@@ -1,5 +1,5 @@
 <!-- Created with Jaspersoft Studio version 7.0.3.final using JasperReports Library version 7.0.3-41034ca841d452f3305ba55b9042260aaa1ab5dd  -->
-<jasperReport name="Variables" language="java" pageWidth="612" pageHeight="792" columnWidth="602" leftMargin="5" rightMargin="5" topMargin="5" bottomMargin="0" uuid="dce64aeb-06d4-4409-8a4f-31a8515b91d8">
+<jasperReport name="Variables" language="java" pageWidth="612" pageHeight="792" columnWidth="555" leftMargin="5" rightMargin="0" topMargin="5" bottomMargin="0" uuid="dce64aeb-06d4-4409-8a4f-31a8515b91d8">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
 	<parameter name="DS_RESULTADOS_VARIABLES" forPrompting="false" class="net.sf.jasperreports.engine.JRDataSource"/>
 	<query language="sql"><![CDATA[]]></query>
@@ -17,7 +17,7 @@
 		<expression><![CDATA[$F{clasi}]]></expression>
 		<groupHeader>
 			<band height="18">
-				<element kind="textField" uuid="a76f3e34-a650-4968-a31a-b708ddacd53d" x="1" y="0" width="570" height="18" fontName="Arial" fontSize="12.0" bold="true" hTextAlign="Center">
+				<element kind="textField" uuid="a76f3e34-a650-4968-a31a-b708ddacd53d" x="1" y="0" width="555" height="18" fontName="Arial" fontSize="12.0" bold="true" hTextAlign="Center">
 					<expression><![CDATA[$F{nomexa}]]></expression>
 					<box>
 						<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -49,7 +49,7 @@
 		<expression><![CDATA[$F{clasi} + $F{codexa} + String.valueOf($F{grupo})]]></expression>
 		<groupHeader>
 			<band height="26">
-				<element kind="textField" uuid="beb6d9e2-5655-4b59-b751-ca83ff2db1cf" x="140" y="11" width="210" height="15" fontName="Arial" fontSize="12.0" bold="true" italic="false" hTextAlign="Center">
+				<element kind="textField" uuid="beb6d9e2-5655-4b59-b751-ca83ff2db1cf" x="140" y="11" width="210" height="15" fontName="Arial" fontSize="12.0" textAdjust="StretchHeight" linkType="None" linkTarget="Self" bold="true" italic="false" hTextAlign="Center">
 					<expression><![CDATA[$F{desgru}]]></expression>
 					<property name="com.jaspersoft.studio.unit.height" value="cm"/>
 				</element>
@@ -66,7 +66,7 @@
 	<background splitType="Stretch"/>
 	<detail>
 		<band height="15" splitType="Stretch">
-			<element kind="textField" uuid="f88ba6ab-0785-4c76-92ef-9f3634c0cb77" x="0" y="0" width="210" height="15" fontName="Arial" fontSize="8.0" textAdjust="StretchHeight" vTextAlign="Middle">
+			<element kind="textField" uuid="f88ba6ab-0785-4c76-92ef-9f3634c0cb77" stretchType="ElementGroupHeight" x="0" y="0" width="210" height="15" fontName="Arial" fontSize="8.0" textAdjust="StretchHeight" vTextAlign="Middle">
 				<expression><![CDATA[$F{desvar} + (($F{resultado} == null || $F{resultado}.equals("")) ? "" : ": ")]]></expression>
 				<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				<property name="net.sf.jasperreports.style.box.pen.lineWidth" value="0.5"/>
@@ -77,7 +77,7 @@
 					<rightPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 			</element>
-			<element kind="textField" uuid="e86a3ebd-ef8a-438c-913f-961ed4117dad" x="210" y="0" width="210" height="15" fontName="Arial" fontSize="8.0" textAdjust="StretchHeight" vTextAlign="Middle">
+			<element kind="textField" uuid="e86a3ebd-ef8a-438c-913f-961ed4117dad" stretchType="ElementGroupHeight" x="210" y="0" width="210" height="15" fontName="Arial" fontSize="8.0" textAdjust="StretchHeight" vTextAlign="Middle">
 				<expression><![CDATA[$F{resultado}]]></expression>
 				<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				<box leftPadding="3" rightPadding="3">
@@ -87,7 +87,7 @@
 					<rightPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 			</element>
-			<element kind="textField" uuid="03391c7c-feac-481d-98d4-8830ec7e7ae8" x="420" y="0" width="150" height="15" fontName="Arial" fontSize="8.0" textAdjust="StretchHeight" vTextAlign="Middle">
+			<element kind="textField" uuid="03391c7c-feac-481d-98d4-8830ec7e7ae8" stretchType="ElementGroupHeight" x="420" y="0" width="135" height="15" fontName="Arial" fontSize="8.0" textAdjust="StretchHeight" vTextAlign="Middle">
 				<expression><![CDATA[$F{param}]]></expression>
 				<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				<box leftPadding="3" rightPadding="3">
