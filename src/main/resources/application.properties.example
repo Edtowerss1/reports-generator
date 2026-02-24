@@ -1,5 +1,13 @@
 spring.application.name=JaspertReport
 
+# Token de autenticación para el servicio interno PHP→Java
+service.token=YOUR_SECRET_TOKEN
+
+# Ruta absoluta a la carpeta de reportes (fuera del JAR). Debe terminar en /
+# Windows: app.reportes.ruta=C:/reportes/
+# Linux:   app.reportes.ruta=/opt/reportes/
+app.reportes.ruta=/ruta/a/reportes/
+
 # Configuración de la base de datos MySQL
 ## Conexión directa a la base de datos (sin variables de entorno)
 # Ajusta aquí los parámetros (host, puerto, base de datos, usuario, contraseña):

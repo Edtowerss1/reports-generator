@@ -6,8 +6,7 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.JREmptyDataSource;
 
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.example.JaspertReport.dtos.DatosEmpresaDTO;
@@ -15,6 +14,7 @@ import com.example.JaspertReport.dtos.AtencionDTO;
 import com.example.JaspertReport.dtos.ResultadoExamenDTO;
 import com.example.JaspertReport.dtos.ReportRequestDTO;
 
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -26,16 +26,15 @@ import java.util.stream.Collectors;
 public class LabReportService {
 
     private final ReportDataService reportDataService;
-    private final ResourceLoader resourceLoader;
 
-    private static final String REPORTS_BASE_PATH = "classpath:reportes/";
+    @Value("${app.reportes.ruta}")
+    private String reportesRuta;
+
     private static final String MAIN_REPORT_NAME = "Laboratorio.jasper";
     private static final String LOGO_FILE_NAME = "Logo.jpg";
 
-    public LabReportService(ReportDataService reportDataService,
-                            ResourceLoader resourceLoader) {
+    public LabReportService(ReportDataService reportDataService) {
         this.reportDataService = reportDataService;
-        this.resourceLoader = resourceLoader;
     }
 
     public byte[] generarReporteAtencion(ReportRequestDTO request) {
@@ -69,22 +68,19 @@ public class LabReportService {
             params.put("DS_RESULTADOS_NORMAL", dsNormal);
             params.put("DS_RESULTADOS_VARIABLES", dsVariables);
 
-            // Carpeta de subreportes (para Normal.jasper, Variables.jasper, etc.)
-            params.put("SUBREPORT_DIR", REPORTS_BASE_PATH);
+            // Directorio de subreportes (ruta real en disco — JasperReports la resuelve directamente)
+            params.put("SUBREPORT_DIR", reportesRuta);
 
-            // Logo como InputStream
-            Resource logoResource = resourceLoader.getResource(REPORTS_BASE_PATH + LOGO_FILE_NAME);
-            params.put("LOGO_INPUT_STREAM", logoResource.getInputStream());
+            // Logo desde disco
+            params.put("LOGO_INPUT_STREAM", new FileInputStream(reportesRuta + LOGO_FILE_NAME));
 
-            // ===== 4) Cargar el principal =====
-            Resource reportResource = resourceLoader.getResource(REPORTS_BASE_PATH + MAIN_REPORT_NAME);
-
-            try (InputStream in = reportResource.getInputStream()) {
+            // ===== 4) Cargar y llenar el reporte principal =====
+            try (InputStream in = new FileInputStream(reportesRuta + MAIN_REPORT_NAME)) {
 
                 JasperPrint jasperPrint = JasperFillManager.fillReport(
                         in,
                         params,
-                        new JREmptyDataSource() // El principal no tiene lista
+                        new JREmptyDataSource()
                 );
 
                 // ===== 5) Exportar a PDF =====
