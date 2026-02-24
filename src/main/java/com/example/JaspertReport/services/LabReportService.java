@@ -42,9 +42,10 @@ public class LabReportService {
         try {
 
             // ===== 1) Obtener datos reales =====
-            DatosEmpresaDTO datosEmpresa = reportDataService.getDatosEmpresa(request.getSqlEmpresa());
-            AtencionDTO datosAtencion = reportDataService.getAtencion(request.getSqlAtencion());
-            List<ResultadoExamenDTO> resultados = reportDataService.getResultados(request.getSqlResultados());
+            // queries[0] = empresa | queries[1] = atencion | queries[2] = resultados
+            DatosEmpresaDTO datosEmpresa = reportDataService.getDatosEmpresa(request.getQueries().get(0));
+            AtencionDTO datosAtencion = reportDataService.getAtencion(request.getQueries().get(1));
+            List<ResultadoExamenDTO> resultados = reportDataService.getResultados(request.getQueries().get(2));
 
             // ===== 2) Dividir la lista según tipores =====
             List<ResultadoExamenDTO> resultadosNormal = resultados.stream()

@@ -34,9 +34,8 @@ public class LabReportController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        if (request.getSqlEmpresa() == null || request.getSqlEmpresa().isBlank() ||
-            request.getSqlAtencion() == null || request.getSqlAtencion().isBlank() ||
-            request.getSqlResultados() == null || request.getSqlResultados().isBlank()) {
+        if (request.getQueries() == null || request.getQueries().size() < 3 ||
+            request.getQueries().stream().anyMatch(q -> q == null || q.isBlank())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
