@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.example.JaspertReport.dtos.DatosEmpresaDTO;
 import com.example.JaspertReport.dtos.AtencionDTO;
 import com.example.JaspertReport.dtos.ResultadoExamenDTO;
+import com.example.JaspertReport.dtos.ReportRequestDTO;
 
 import java.io.InputStream;
 import java.math.BigDecimal;
@@ -37,13 +38,13 @@ public class LabReportService {
         this.resourceLoader = resourceLoader;
     }
 
-    public byte[] generarReporteAtencion(String codAten, String rowIds) {
+    public byte[] generarReporteAtencion(ReportRequestDTO request) {
         try {
 
             // ===== 1) Obtener datos reales =====
-            DatosEmpresaDTO datosEmpresa = reportDataService.getDatosEmpresa();
-            AtencionDTO datosAtencion = reportDataService.getAtencion(codAten);
-            List<ResultadoExamenDTO> resultados = reportDataService.getResultados(codAten, rowIds);
+            DatosEmpresaDTO datosEmpresa = reportDataService.getDatosEmpresa(request.getSqlEmpresa());
+            AtencionDTO datosAtencion = reportDataService.getAtencion(request.getSqlAtencion());
+            List<ResultadoExamenDTO> resultados = reportDataService.getResultados(request.getSqlResultados());
 
             // ===== 2) Dividir la lista según tipores =====
             List<ResultadoExamenDTO> resultadosNormal = resultados.stream()
@@ -90,7 +91,7 @@ public class LabReportService {
             }
 
         } catch (Exception e) {
-            throw new RuntimeException("Error generando reporte para la atención " + codAten, e);
+            throw new RuntimeException("Error generando reporte", e);
         }
     }
 }

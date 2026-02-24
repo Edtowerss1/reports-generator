@@ -24,12 +24,7 @@ public class ReportDataService {
     // 1) DATOS DE LA EMPRESA (QUERY 1)
     // ------------------------------------------------------------
 
-    public DatosEmpresaDTO getDatosEmpresa() {
-        String sql = """
-                    SELECT *
-                    FROM Datos_Empresa
-                """;
-
+    public DatosEmpresaDTO getDatosEmpresa(String sql) {
         return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> mapDatosEmpresa(rs));
     }
 
@@ -63,23 +58,8 @@ public class ReportDataService {
     // 2) DATOS DE LA ATENCIÓN / PACIENTE (QUERY 2)
     // ------------------------------------------------------------
 
-    public AtencionDTO getAtencion(String codAten) {
-        String sql = """
-                    SELECT t1.*,
-                           CONCAT(T2.primnomusu, ' ', T2.segunomusu, ' ', T2.primapelli, ' ', T2.seguapelli) AS nombre,
-                           t3.Nommed AS Nommed,
-                           CONCAT(TRIM(T2.valoredad), ' ', T2.unimededad) AS edadpac,
-                           IF(t2.sexo=1, 'Masculino', 'Femenino') AS sexopac,
-                           IF(t4.nomemp IS NULL, '', t4.nomemp) AS nomemp,
-                           t2.fechanace
-                    FROM Mae_Atencion t1
-                    LEFT JOIN mae_pacientes t2 ON t2.NumIdentUs=t1.codpac
-                    LEFT JOIN mae_medicos t3 ON t1.codmed=t3.codmed
-                    LEFT JOIN mae_empresas t4 ON t1.empresa=t4.codemp
-                    WHERE t1.codaten = ?
-                """;
-
-        return jdbcTemplate.queryForObject(sql, new Object[] { codAten }, (rs, rowNum) -> mapAtencion(rs));
+    public AtencionDTO getAtencion(String sql) {
+        return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> mapAtencion(rs));
     }
 
     private AtencionDTO mapAtencion(ResultSet rs) throws SQLException {
@@ -169,71 +149,8 @@ public class ReportDataService {
     // 3) RESULTADOS DE EXÁMENES (QUERY 3)
     // ------------------------------------------------------------
 
-    public List<ResultadoExamenDTO> getResultados(String codAten, String rowIds) {
-
-        String sql = """
-                    SELECT t1.Codaten,
-                           t1.Codexa,
-                           t1.Result,
-                           t1.Obsexa,
-                           t1.Rescom,
-                           t2.nomexa,
-                           t2.unidad,
-                           IF(JSON_VALUE(t1.multiproposito, '$.h_otroparamref') IS NULL
-                                OR JSON_VALUE(t1.multiproposito, '$.h_otroparamref')='',
-                                t2.parnor,
-                                JSON_UNQUOTE(JSON_EXTRACT(t2.MULTIPARAMNORMAL,
-                                CONCAT('$.paramnormal.',
-                                JSON_VALUE(t1.multiproposito, '$.h_otroparamref'),
-                                '.valor')))) AS parnor,
-                           t2.tipores,
-                           t2.nota,
-                           t2.ImpVarConResultado,
-                           IF(t2.tipores>1,
-                               CHAR(RIGHT(t1.Row_id, 2)-IF(RIGHT(t1.Row_id, 2)>36, 36, 0)),
-                               t1.clasi) AS clasi,
-                           t2.AumentaFuente,
-                           IF(t9.descla IS NULL, '', t9.descla) AS descla,
-                           t2.tecnica,
-                           t3.codvar,
-                           t3.resultado,
-                           t3.grupo,
-                           IF(t3.orden IS NULL, t2.nivel, t3.orden) AS orden,
-                           t4.desvar,
-                           t5.desgru,
-                           IF(JSON_VALUE(t1.multiproposito, '$.h_otroparamref') IS NULL
-                              OR JSON_VALUE(t1.multiproposito, '$.h_otroparamref')='',
-                              t6.param,
-                              JSON_UNQUOTE(JSON_EXTRACT(t6.MULTIPARAMNORMAL,
-                              CONCAT('$.paramnormal.',
-                              JSON_VALUE(t1.multiproposito, '$.h_otroparamref'),
-                              '.valor')))) AS param,
-                           t1.codbac,
-                           t7.firma,
-                           t8.firma AS firmav,
-                           t1.firmavalidar AS validasino,
-                           t8.nombac AS nombacvalida
-                    FROM Mov_Atencion t1
-                    LEFT JOIN mae_descripexa t2 ON t1.codexa=t2.codexa
-                    LEFT JOIN mov_atencion_variable t3 ON t1.codaten=t3.codaten
-                        AND t1.codexa=t3.codexa
-                    LEFT JOIN mae_variableresulta t4 ON t3.codvar=t4.codvar
-                    LEFT JOIN mae_descripexa_resultagru t5 ON t3.codexa=t5.codexa
-                        AND t3.grupo=t5.codgru
-                    LEFT JOIN mae_descripexa_resultavar t6 ON t3.codexa=t6.codexa
-                        AND t3.codvar=t6.codvar
-                    LEFT JOIN mae_bacteriologos t7 ON t1.codbac=t7.codbac
-                    LEFT JOIN mae_bacteriologos t8 ON t1.codbacvalidar=t8.codbac
-                    LEFT JOIN mae_clasifica t9 ON t1.clasi=t9.codcla
-                    WHERE t1.codaten = ?
-                      AND FIND_IN_SET(t1.row_id, ?) > 0
-                      AND IF(t2.ImpVarConResultado=TRUE,
-                             (IF(t3.resultado<>'', TRUE, FALSE)), TRUE)
-                    ORDER BY clasi, t3.grupo, orden
-                """;
-
-        Object[] params = new Object[] { codAten, rowIds };
-        return jdbcTemplate.query(sql, params, (rs, rowNum) -> mapResultado(rs));
+    public List<ResultadoExamenDTO> getResultados(String sql) {
+        return jdbcTemplate.query(sql, (rs, rowNum) -> mapResultado(rs));
     }
 
     private ResultadoExamenDTO mapResultado(ResultSet rs) throws SQLException {
