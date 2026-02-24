@@ -1,0 +1,82 @@
+<!-- Created with Jaspersoft Studio version 7.0.3.final using JasperReports Library version 7.0.3-41034ca841d452f3305ba55b9042260aaa1ab5dd  -->
+<jasperReport name="Paciente" language="java" columnCount="1" pageWidth="612" pageHeight="792" columnWidth="612" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="cc4d4c94-ba2a-4887-95a4-b3e64c7ea1c3">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<parameter name="DATOS_ATENCION" forPrompting="false" class="com.example.JaspertReport.dtos.AtencionDTO"/>
+	<query language="sql"><![CDATA[]]></query>
+	<detail>
+		<band height="64" splitType="Stretch">
+			<element kind="staticText" uuid="066eb655-6e4e-42f0-be00-c15cac33018b" x="2" y="41" width="80" height="11" fontName="Arial" fontSize="9.0">
+				<text><![CDATA[Médico Remite]]></text>
+			</element>
+			<element kind="staticText" uuid="567a4854-92f3-4d61-b45d-46612e40edb2" x="2" y="53" width="80" height="11" fontName="Arial" fontSize="9.0">
+				<text><![CDATA[Empresa]]></text>
+			</element>
+			<element kind="staticText" uuid="149174d1-5226-49ed-856f-0d928cd01951" x="2" y="17" width="80" height="11" fontName="Arial" fontSize="9.0">
+				<text><![CDATA[Identificación]]></text>
+			</element>
+			<element kind="staticText" uuid="a2a8bcb8-4de7-4645-ab59-2df406e5152f" positionType="Float" stretchType="NoStretch" x="2" y="5" width="80" height="11" fontName="Arial" fontSize="9.0">
+				<text><![CDATA[Paciente]]></text>
+				<property name="com.jaspersoft.studio.unit.width" value="cm"/>
+				<property name="com.jaspersoft.studio.unit.height" value="cm"/>
+			</element>
+			<element kind="staticText" uuid="1b8bcd2b-8c19-4ade-9046-4c0177b698d8" x="2" y="29" width="80" height="11" fontName="Arial" fontSize="9.0">
+				<text><![CDATA[Natalicio - Edad]]></text>
+			</element>
+			<element kind="textField" uuid="e9438e99-b671-4003-b4a2-3487edf1c23e" x="82" y="5" width="238" height="11" fontName="Arial" fontSize="8.0">
+				<expression><![CDATA[": "+$P{DATOS_ATENCION}.getNombre()]]></expression>
+			</element>
+			<element kind="textField" uuid="4841db28-36db-4730-9a7a-c50e1bed225a" x="82" y="17" width="238" height="11" fontName="Arial" fontSize="8.0">
+				<expression><![CDATA[": "+$P{DATOS_ATENCION}.getCodPac()]]></expression>
+			</element>
+			<element kind="textField" uuid="1cc7deb0-79bd-451b-903d-e49da985d18a" x="82" y="29" width="128" height="11" fontName="Arial" fontSize="8.0">
+				<expression><![CDATA[": "+java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy").format($P{DATOS_ATENCION}.getFechaNace()) + " - " + $P{DATOS_ATENCION}.getEdadpac()]]></expression>
+			</element>
+			<element kind="textField" uuid="1532ff1c-27d6-4729-834e-8ec3e3882309" x="82" y="40" width="238" height="11" fontName="Arial" fontSize="8.0">
+				<expression><![CDATA[": "+$P{DATOS_ATENCION}.getNommed()]]></expression>
+			</element>
+			<element kind="textField" uuid="0d03b383-fb7f-4d44-93b8-b9d54a4ce659" x="82" y="53" width="238" height="11" fontName="Arial" fontSize="8.0" textAdjust="StretchHeight">
+				<expression><![CDATA[": "+$P{DATOS_ATENCION}.getNomemp()]]></expression>
+			</element>
+			<element kind="staticText" uuid="8eded2fb-fb46-47f5-ad3e-c3d29d7b08ad" positionType="Float" stretchType="NoStretch" x="320" y="5" width="80" height="11" fontName="Arial" fontSize="9.0">
+				<text><![CDATA[Número Atención]]></text>
+				<property name="com.jaspersoft.studio.unit.width" value="cm"/>
+				<property name="com.jaspersoft.studio.unit.height" value="cm"/>
+			</element>
+			<element kind="staticText" uuid="a7e952dd-4ef3-4738-89c1-a07465b84fba" positionType="Float" stretchType="NoStretch" x="320" y="17" width="80" height="11" fontName="Arial" fontSize="9.0">
+				<text><![CDATA[Fecha Atención]]></text>
+				<property name="com.jaspersoft.studio.unit.width" value="cm"/>
+				<property name="com.jaspersoft.studio.unit.height" value="cm"/>
+			</element>
+			<element kind="staticText" uuid="62d3ec73-af71-4b8f-9f0a-58cb4d874a11" positionType="Float" stretchType="NoStretch" x="320" y="53" width="80" height="11" fontName="Arial" fontSize="9.0">
+				<text><![CDATA[Fecha Impresión]]></text>
+				<property name="com.jaspersoft.studio.unit.width" value="cm"/>
+				<property name="com.jaspersoft.studio.unit.height" value="cm"/>
+			</element>
+			<element kind="staticText" uuid="1a156dae-be6b-43c2-9200-5480c12ab791" positionType="Float" stretchType="NoStretch" x="320" y="29" width="80" height="11" fontName="Arial" fontSize="9.0">
+				<text><![CDATA[Hora Recepción]]></text>
+				<property name="com.jaspersoft.studio.unit.width" value="cm"/>
+				<property name="com.jaspersoft.studio.unit.height" value="cm"/>
+			</element>
+			<element kind="textField" uuid="b7dfe47a-0a78-4331-bd7b-10ca67df659e" x="400" y="5" width="170" height="11" fontName="Arial" fontSize="8.0">
+				<expression><![CDATA[": "+$P{DATOS_ATENCION}.getCodAten()]]></expression>
+			</element>
+			<element kind="textField" uuid="49f44b9c-3479-4f73-b150-d5bbfd0dd84b" x="400" y="29" width="170" height="11" fontName="Arial" fontSize="8.0">
+				<expression><![CDATA[": "+$P{DATOS_ATENCION}.getHora()]]></expression>
+			</element>
+			<element kind="textField" uuid="fab3def3-30c9-431c-a056-db9e7f01b99d" x="400" y="17" width="170" height="11" fontName="Arial" fontSize="8.0">
+				<expression><![CDATA[": " + java.time.format.DateTimeFormatter.ofPattern("EEEE, dd 'de' MMMM 'de' yyyy", new java.util.Locale("es", "ES")).format($P{DATOS_ATENCION}.getFecha())]]></expression>
+			</element>
+			<element kind="textField" uuid="4fac65f7-0b0a-4d26-9055-e79b4e1f3a66" x="400" y="53" width="170" height="11" fontName="Arial" fontSize="8.0">
+				<expression><![CDATA[": " + java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy").format(java.time.LocalDate.now())]]></expression>
+			</element>
+			<element kind="staticText" uuid="b1c1079d-883b-4d97-a4df-a086de5fd8a2" positionType="Float" stretchType="NoStretch" x="210" y="29" width="30" height="11" fontName="Arial" fontSize="9.0">
+				<text><![CDATA[Sexo]]></text>
+				<property name="com.jaspersoft.studio.unit.width" value="cm"/>
+				<property name="com.jaspersoft.studio.unit.height" value="cm"/>
+			</element>
+			<element kind="textField" uuid="22e27de8-5b85-4f05-b47c-2761104af03e" x="240" y="29" width="70" height="11" fontName="Arial" fontSize="9.0">
+				<expression><![CDATA[": " +$P{DATOS_ATENCION}.getSexopac()]]></expression>
+			</element>
+		</band>
+	</detail>
+</jasperReport>
