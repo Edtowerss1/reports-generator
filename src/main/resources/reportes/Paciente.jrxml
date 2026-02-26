@@ -1,5 +1,5 @@
 <!-- Created with Jaspersoft Studio version 7.0.3.final using JasperReports Library version 7.0.3-41034ca841d452f3305ba55b9042260aaa1ab5dd  -->
-<jasperReport name="Paciente" language="java" columnCount="1" pageWidth="612" pageHeight="792" columnWidth="612" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="cc4d4c94-ba2a-4887-95a4-b3e64c7ea1c3">
+<jasperReport name="Paciente" language="java" columnCount="1" pageWidth="572" pageHeight="792" columnWidth="572" leftMargin="0" rightMargin="0" topMargin="7" bottomMargin="0" uuid="cc4d4c94-ba2a-4887-95a4-b3e64c7ea1c3">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
 	<parameter name="DS_ATENCION" forPrompting="false" class="net.sf.jasperreports.engine.data.JRMapCollectionDataSource"/>
 	<query language="sql"><![CDATA[]]></query>
@@ -57,16 +57,16 @@
 				<property name="com.jaspersoft.studio.unit.width" value="cm"/>
 				<property name="com.jaspersoft.studio.unit.height" value="cm"/>
 			</element>
-			<element kind="textField" uuid="b7dfe47a-0a78-4331-bd7b-10ca67df659e" x="400" y="5" width="170" height="11" fontName="Arial" fontSize="8.0">
+			<element kind="textField" uuid="b7dfe47a-0a78-4331-bd7b-10ca67df659e" x="400" y="5" width="172" height="11" fontName="Arial" fontSize="8.0">
 				<expression><![CDATA[": " + $P{DS_ATENCION}.getData().iterator().next().get("CODATEN")]]></expression>
 			</element>
-			<element kind="textField" uuid="49f44b9c-3479-4f73-b150-d5bbfd0dd84b" x="400" y="29" width="170" height="11" fontName="Arial" fontSize="8.0">
+			<element kind="textField" uuid="49f44b9c-3479-4f73-b150-d5bbfd0dd84b" x="400" y="29" width="172" height="11" fontName="Arial" fontSize="8.0">
 				<expression><![CDATA[": " + $P{DS_ATENCION}.getData().iterator().next().get("HORA")]]></expression>
 			</element>
-			<element kind="textField" uuid="fab3def3-30c9-431c-a056-db9e7f01b99d" x="400" y="17" width="170" height="11" fontName="Arial" fontSize="8.0">
+			<element kind="textField" uuid="fab3def3-30c9-431c-a056-db9e7f01b99d" x="400" y="17" width="172" height="11" fontName="Arial" fontSize="8.0">
 				<expression><![CDATA[": " + ($P{DS_ATENCION}.getData().iterator().next().get("FECHA") == null ? "" : java.time.format.DateTimeFormatter.ofPattern("EEEE, dd 'de' MMMM 'de' yyyy", new java.util.Locale("es", "ES")).format(((java.sql.Date)$P{DS_ATENCION}.getData().iterator().next().get("FECHA")).toLocalDate()))]]></expression>
 			</element>
-			<element kind="textField" uuid="4fac65f7-0b0a-4d26-9055-e79b4e1f3a66" x="400" y="53" width="170" height="11" fontName="Arial" fontSize="8.0">
+			<element kind="textField" uuid="4fac65f7-0b0a-4d26-9055-e79b4e1f3a66" x="400" y="53" width="172" height="11" fontName="Arial" fontSize="8.0">
 				<expression><![CDATA[": " + java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy").format(java.time.LocalDate.now())]]></expression>
 			</element>
 			<element kind="staticText" uuid="b1c1079d-883b-4d97-a4df-a086de5fd8a2" positionType="Float" stretchType="NoStretch" x="210" y="29" width="30" height="11" fontName="Arial" fontSize="9.0">
