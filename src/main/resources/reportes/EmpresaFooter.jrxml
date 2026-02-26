@@ -1,0 +1,18 @@
+<!-- Created with Jaspersoft Studio version 7.0.3.final using JasperReports Library version 7.0.3-41034ca841d452f3305ba55b9042260aaa1ab5dd  -->
+<jasperReport name="EmpresaFooter" language="java" pageWidth="532" pageHeight="792" columnWidth="532" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="d4e5f6a7-b8c9-0123-defa-234567890123">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<field name="Direccion1" class="java.lang.String"/>
+	<field name="Telefono1" class="java.lang.String"/>
+	<field name="Direccion2" class="java.lang.String"/>
+	<field name="Telefono2" class="java.lang.String"/>
+	<field name="Direccion3" class="java.lang.String"/>
+	<field name="Direccion4" class="java.lang.String"/>
+	<detail>
+		<band height="30" splitType="Stretch">
+			<element kind="textField" uuid="e5f6a7b8-c9d0-1234-efab-345678901234" x="0" y="0" width="532" height="30" fontName="Arial" fontSize="6.0" hTextAlign="Center">
+				<expression><![CDATA[$F{Direccion1} + " " + $F{Telefono1} + " - " + $F{Direccion2} + " " + $F{Telefono2} + " \n" +
+$F{Direccion3} + " - " + $F{Direccion4}]]></expression>
+			</element>
+		</band>
+	</detail>
+</jasperReport>

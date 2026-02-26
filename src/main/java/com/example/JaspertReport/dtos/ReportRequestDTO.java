@@ -1,16 +1,12 @@
 package com.example.JaspertReport.dtos;
 
+import lombok.Data;
+
 import java.util.List;
 
+@Data
 public class ReportRequestDTO {
-
-    private List<String> queries;
-
-    public List<String> getQueries() {
-        return queries;
-    }
-
-    public void setQueries(List<String> queries) {
-        this.queries = queries;
-    }
+    private String reportName;
+    private String format;
+    private List<QueryParamDTO> queries;
 }
