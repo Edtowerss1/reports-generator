@@ -1,0 +1,14 @@
+{
+  "properties": [
+    {
+      "name": "service.token",
+      "type": "java.lang.String",
+      "description": "Token de autenticación para el servicio interno PHP→Java"
+    },
+    {
+      "name": "app.reportes.ruta",
+      "type": "java.lang.String",
+      "description": "Ruta absoluta a la carpeta de reportes (fuera del JAR). Debe terminar en /"
+    }
+  ]
+}
