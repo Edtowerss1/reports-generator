@@ -23,7 +23,7 @@
 Esta API es un **motor genérico de generación de reportes**. Recibe por HTTP:
 
 - El **nombre** del reporte (plantilla `.jasper`)
-- El **formato** de salida (PDF o XLSX)
+- El **formato** de salida (PDF, XLSX, HTML, DOCX)
 - Las **consultas SQL** que alimentan el reporte
 
 Y devuelve el archivo generado listo para descargar o mostrar en el navegador.
@@ -68,6 +68,8 @@ src/main/java/com/example/JaspertReport/
 │       ├── ReportExporter.java          ← Interfaz (contrato)
 │       ├── PdfReportExporter.java       ← Exporta a PDF
 │       ├── ExcelReportExporter.java     ← Exporta a XLSX
+│       ├── HtmlReportExporter.java      ← Exporta a HTML
+│       ├── DocxReportExporter.java      ← Exporta a DOCX (Word)
 │       └── ExporterRegistry.java        ← Registro automático de exportadores
 │
 └── exceptions/
@@ -173,7 +175,7 @@ Cliente (PHP, Postman, etc.)
 | Campo        | Tipo             | Obligatorio | Descripción                                                |
 |--------------|------------------|-------------|------------------------------------------------------------|
 | `reportName` | String           | Sí          | Nombre de la plantilla sin extensión (ej: `"Laboratorio"`) |
-| `format`     | String           | Sí          | Formato de salida: `"PDF"` o `"XLSX"`                      |
+| `format`     | String           | Sí          | Formato de salida: `"PDF"`, `"XLSX"`, `"HTML"`, `"DOCX"`    |
 | `queries`    | Array de objetos | Sí          | Al menos una query                                         |
 | `queries[].param` | String      | Sí          | Nombre del parámetro en el reporte `.jrxml`                |
 | `queries[].query` | String      | Sí          | Consulta SQL a ejecutar contra la BD                       |
@@ -283,7 +285,18 @@ $P{DS_ATENCION}.getData().iterator().next().get("nombre")
 
 ---
 
-## 8. Cómo agregar un nuevo formato de exportación
+## 8. Formatos de exportación disponibles
+
+| Formato | Content-Type | Descripción |
+|---------|--------------|-------------|
+| **PDF** | `application/pdf` | Formato de documento portátil, optimizado para impresión |
+| **XLSX** | `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet` | Hoja de cálculo Excel, datos tabulares |
+| **HTML** | `text/html` | Página web con estilos embebidos, visualización en navegador |
+| **DOCX** | `application/vnd.openxmlformats-officedocument.wordprocessingml.document` | Documento Word moderno, estructura preserva paginación |
+
+---
+
+## 9. Cómo agregar un nuevo formato de exportación
 
 Para agregar, por ejemplo, exportación a **CSV**:
 
@@ -331,7 +344,7 @@ Spring detecta la clase por `@Component`, el `ExporterRegistry` la registra auto
 
 ---
 
-## 9. Cómo agregar un nuevo reporte
+## 10. Cómo agregar un nuevo reporte
 
 **1.** Diseñar la plantilla `.jrxml` con Jaspersoft Studio u otro editor
 
@@ -347,7 +360,7 @@ Spring detecta la clase por `@Component`, el `ExporterRegistry` la registra auto
 
 ---
 
-## 10. Configuración
+## 11. Configuración
 
 Archivo: `src/main/resources/application.properties`
 
@@ -372,7 +385,7 @@ Esto permite actualizar plantillas sin reiniciar la API manualmente (basta con r
 
 ---
 
-## 11. Ejemplo completo con Postman
+## 12. Ejemplo completo con Postman
 
 ### Configuración
 
@@ -417,7 +430,7 @@ En Postman, cambiar la vista a **Preview** para ver el PDF renderizado directame
 
 ---
 
-## 12. Códigos de respuesta HTTP
+## 13. Códigos de respuesta HTTP
 
 | Código | Significado              | Cuándo ocurre                                                |
 |--------|--------------------------|--------------------------------------------------------------|
@@ -430,7 +443,40 @@ En Postman, cambiar la vista a **Preview** para ver el PDF renderizado directame
 
 ---
 
-## 13. Preguntas frecuentes
+## 14. Ejemplos de uso para cada formato
+
+### Generar reporte en HTML
+
+```json
+{
+  "reportName": "Laboratorio",
+  "format": "HTML",
+  "queries": [
+    { "param": "DS_EMPRESA", "query": "SELECT * FROM Datos_Empresa" },
+    { "param": "DS_ATENCION", "query": "SELECT ... FROM Mae_Atencion ..." }
+  ]
+}
+```
+
+**Respuesta:** HTML con estilos embebidos, paginación CSS, visualizable en navegador
+
+---
+
+### Generar reporte en DOCX
+
+```json
+{
+  "reportName": "Laboratorio",
+  "format": "DOCX",
+  "queries": [ ... ]
+}
+```
+
+**Respuesta:** Documento Word moderno (Office Open XML) con estructura y paginación preservadas, descargable
+
+---
+
+## 15. Preguntas frecuentes
 
 ### "Modifiqué un .jrxml pero no veo los cambios"
 Reinicia la API. Al arrancar, `JasperFiller` detecta que el `.jrxml` es más reciente que el `.jasper` y lo recompila automáticamente.
