@@ -12,43 +12,47 @@
 		<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
 		<parameter name="SUBREPORT_DIR" class="java.lang.String"/>
 		<parameter name="DS_STICKER" forPrompting="false" class="net.sf.jasperreports.engine.data.JRMapCollectionDataSource"/>
+		<field name="codigo_cilindro" class="java.lang.Object"/>
+		<field name="nombre_qr_grupo" class="java.lang.Object"/>
+		<field name="capacidad_cilindro" class="java.lang.Object"/>
+		<field name="clase_cilindro" class="java.lang.Object"/>
 		<query language="sql"><![CDATA[]]></query>
 		<detail>
 			<band height="62" splitType="Stretch">
 				<element kind="component" uuid="e5d85442-82d5-4951-92ca-8952f947b136" x="0" y="0" width="42" height="42">
 					<component kind="barcode4j:QRCode" margin="0">
-						<codeExpression><![CDATA[String.valueOf($P{DS_STICKER}.getData().iterator().next().get("codigo_cilindro"))]]></codeExpression>
+						<codeExpression><![CDATA[String.valueOf($F{codigo_cilindro})]]></codeExpression>
 					</component>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</element>
 				<element kind="textField" uuid="6b328af8-6e73-4b95-a688-15e90095f5fd" x="50" y="-4" width="64" height="20" fontName="Arial" fontSize="14.0" bold="true" textAdjust="ScaleFont" hTextAlign="Left" vTextAlign="Middle">
-					<expression><![CDATA[String.valueOf($P{DS_STICKER}.getData().iterator().next().get("nombre_qr_grupo"))]]></expression>
+					<expression><![CDATA[String.valueOf($F{nombre_qr_grupo})]]></expression>
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 				</element>
 				<element kind="textField" uuid="e18303fd-56c2-4c40-9d59-3013e8b2652b" x="50" y="9" width="64" height="20" fontName="Arial" fontSize="14.0" bold="true" hTextAlign="Left" vTextAlign="Middle">
-					<expression><![CDATA[String.valueOf(new java.math.BigDecimal(String.valueOf($P{DS_STICKER}.getData().iterator().next().get("capacidad_cilindro"))).intValue())]]></expression>
+					<expression><![CDATA[String.valueOf(new java.math.BigDecimal(String.valueOf($F{capacidad_cilindro})).intValue())]]></expression>
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 				</element>
 				<element kind="textField" uuid="c104dab8-1038-4411-ab95-1cf7d37422bd" x="0" y="42" width="114" height="20" fontName="Arial" fontSize="14.0" bold="true" hTextAlign="Left" vTextAlign="Middle">
-					<expression><![CDATA[String.valueOf($P{DS_STICKER}.getData().iterator().next().get("codigo_cilindro"))]]></expression>
+					<expression><![CDATA[String.valueOf($F{codigo_cilindro})]]></expression>
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</element>
 				<element kind="image" uuid="0676ae2a-f5a9-4338-98bf-0ab49ac1d3dd" x="60" y="16" width="54" height="26" hImageAlign="Center" vImageAlign="Bottom">
-					<printWhenExpression><![CDATA["1".equals(String.valueOf($P{DS_STICKER}.getData().iterator().next().get("clase_cilindro")))]]></printWhenExpression>
+					<printWhenExpression><![CDATA["1".equals(String.valueOf($F{clase_cilindro}))]]></printWhenExpression>
 					<expression><![CDATA[$P{SUBREPORT_DIR} + "LOGO_GASES.png"]]></expression>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
 				</element>
 				<element kind="textField" uuid="1f93d8de-5f23-4f16-bf72-d39075b10c87" x="60" y="16" width="54" height="26" fontName="Arial" fontSize="14.0" bold="true" hTextAlign="Center" vTextAlign="Bottom">
-					<printWhenExpression><![CDATA[!"1".equals(String.valueOf($P{DS_STICKER}.getData().iterator().next().get("clase_cilindro")))]]></printWhenExpression>
+					<printWhenExpression><![CDATA[!"1".equals(String.valueOf($F{clase_cilindro}))]]></printWhenExpression>
 					<expression><![CDATA["**"]]></expression>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>

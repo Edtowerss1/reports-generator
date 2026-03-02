@@ -6,15 +6,17 @@
 2. [Stack tecnológico](#2-stack-tecnológico)
 3. [Estructura del proyecto](#3-estructura-del-proyecto)
 4. [Cómo funciona paso a paso](#4-cómo-funciona-paso-a-paso)
-5. [El endpoint](#5-el-endpoint)
+5. [Endpoints](#5-endpoints)
 6. [Arquitectura y capas](#6-arquitectura-y-capas)
 7. [Plantillas JRXML y subreportes](#7-plantillas-jrxml-y-subreportes)
 8. [Cómo agregar un nuevo formato de exportación](#8-cómo-agregar-un-nuevo-formato-de-exportación)
 9. [Cómo agregar un nuevo reporte](#9-cómo-agregar-un-nuevo-reporte)
 10. [Configuración](#10-configuración)
-11. [Ejemplo completo con Postman](#11-ejemplo-completo-con-postman)
-12. [Códigos de respuesta HTTP](#12-códigos-de-respuesta-http)
-13. [Preguntas frecuentes](#13-preguntas-frecuentes)
+11. [Configuración](#11-configuración)
+12. [Ejemplos completos con Postman](#12-ejemplos-completos-con-postman)
+13. [Códigos de respuesta HTTP](#13-códigos-de-respuesta-http)
+14. [Ejemplos de uso por formato](#14-ejemplos-de-uso-para-cada-formato)
+15. [Preguntas frecuentes](#15-preguntas-frecuentes)
 
 ---
 
@@ -34,14 +36,14 @@ La API no sabe nada sobre el contenido de los reportes. Solo ejecuta las queries
 
 ## 2. Stack tecnológico
 
-| Tecnología       | Versión  | Para qué se usa                          |
-|------------------|----------|------------------------------------------|
-| Java             | 17       | Lenguaje base                            |
-| Spring Boot      | 3.4.12   | Framework web + inyección de dependencias|
-| JasperReports    | 7.0.3    | Motor de reportes (compilar, llenar, exportar) |
-| MySQL Connector  | runtime  | Driver de conexión a base de datos       |
-| Lombok           | 1.18.28  | Reducir código repetitivo (getters, setters) |
-| Maven            | 3+       | Gestión de dependencias y build          |
+| Tecnología      | Versión | Para qué se usa                                |
+| --------------- | ------- | ---------------------------------------------- |
+| Java            | 17      | Lenguaje base                                  |
+| Spring Boot     | 3.4.12  | Framework web + inyección de dependencias      |
+| JasperReports   | 7.0.3   | Motor de reportes (compilar, llenar, exportar) |
+| MySQL Connector | runtime | Driver de conexión a base de datos             |
+| Lombok          | 1.18.28 | Reducir código repetitivo (getters, setters)   |
+| Maven           | 3+      | Gestión de dependencias y build                |
 
 ---
 
@@ -57,13 +59,19 @@ src/main/java/com/example/JaspertReport/
 │
 ├── dtos/
 │   ├── ReportRequestDTO.java            ← Cuerpo del JSON que llega
+│   ├── PrintRequestDTO.java             ← Cuerpo del JSON para impresión directa
 │   ├── QueryParamDTO.java               ← Cada query con su nombre
 │   └── ReportResult.java                ← Resultado: bytes + tipo + extensión
+│
+├── config/
+│   ├── LabDataSourceConfig.java         ← DataSource principal (laboratorio)
+│   └── GasesDataSourceConfig.java       ← DataSource secundario (gases)
 │
 ├── services/
 │   ├── ReportOrchestrator.java          ← Orquesta todo el flujo
 │   ├── JasperFiller.java                ← Compila plantillas + llena reportes
 │   ├── QueryExecutor.java               ← Ejecuta SQL contra la BD
+│   ├── ReportPrintService.java          ← Envía JasperPrint a impresora Windows
 │   └── exporters/
 │       ├── ReportExporter.java          ← Interfaz (contrato)
 │       ├── PdfReportExporter.java       ← Exporta a PDF
@@ -76,7 +84,9 @@ src/main/java/com/example/JaspertReport/
     ├── GlobalExceptionHandler.java      ← Manejo centralizado de errores
     ├── ReportNotFoundException.java     ← Reporte no existe → 404
     ├── InvalidFormatException.java      ← Formato no soportado → 400
-    └── ReportGenerationException.java   ← Error al generar → 500
+  ├── ReportGenerationException.java   ← Error al generar → 500
+  ├── PrinterNotFoundException.java    ← Impresora no encontrada → 400
+  └── ReportPrintException.java        ← Error al imprimir → 500
 
 
 src/main/resources/
@@ -90,7 +100,9 @@ src/main/resources/
     ├── Paciente.jrxml / .jasper         ← Subreporte: datos del paciente
     ├── Variables.jrxml / .jasper        ← Subreporte: resultados tipo variable
     ├── Normal.jrxml / .jasper           ← Subreporte: resultados normales
-    └── Logo.jpg                         ← Logo de la empresa
+  ├── StickerQR.jrxml / .jasper        ← Sticker QR para impresión
+  ├── Logo.jpg                         ← Logo de la empresa
+  └── LOGO_GASES.png                   ← Logo usado en StickerQR
 ```
 
 ---
@@ -142,16 +154,16 @@ Cliente (PHP, Postman, etc.)
 
 ---
 
-## 5. El endpoint
+## 5. Endpoints
 
 ### `POST /reportes/generar`
 
 #### Headers requeridos
 
-| Header            | Valor                              | Descripción                |
-|-------------------|------------------------------------|----------------------------|
-| `X-Service-Token` | El token configurado en el servidor| Autenticación del servicio |
-| `Content-Type`    | `application/json`                 | Tipo del cuerpo            |
+| Header            | Valor                               | Descripción                |
+| ----------------- | ----------------------------------- | -------------------------- |
+| `X-Service-Token` | El token configurado en el servidor | Autenticación del servicio |
+| `Content-Type`    | `application/json`                  | Tipo del cuerpo            |
 
 #### Cuerpo (JSON)
 
@@ -172,13 +184,14 @@ Cliente (PHP, Postman, etc.)
 }
 ```
 
-| Campo        | Tipo             | Obligatorio | Descripción                                                |
-|--------------|------------------|-------------|------------------------------------------------------------|
-| `reportName` | String           | Sí          | Nombre de la plantilla sin extensión (ej: `"Laboratorio"`) |
-| `format`     | String           | Sí          | Formato de salida: `"PDF"`, `"XLSX"`, `"HTML"`, `"DOCX"`    |
-| `queries`    | Array de objetos | Sí          | Al menos una query                                         |
-| `queries[].param` | String      | Sí          | Nombre del parámetro en el reporte `.jrxml`                |
-| `queries[].query` | String      | Sí          | Consulta SQL a ejecutar contra la BD                       |
+| Campo                  | Tipo             | Obligatorio | Descripción                                                   |
+| ---------------------- | ---------------- | ----------- | ------------------------------------------------------------- |
+| `reportName`           | String           | Sí          | Nombre de la plantilla sin extensión (ej: `"Laboratorio"`)    |
+| `format`               | String           | Sí          | Formato de salida: `"PDF"`, `"XLSX"`, `"HTML"`, `"DOCX"`      |
+| `queries`              | Array de objetos | Sí          | Al menos una query                                            |
+| `queries[].param`      | String           | Sí          | Nombre del parámetro en el reporte `.jrxml`                   |
+| `queries[].query`      | String           | Sí          | Consulta SQL a ejecutar contra la BD                          |
+| `queries[].datasource` | String           | No          | Base de datos a usar por query: `"gases"` o por defecto `lab` |
 
 **Importante:** El valor de `param` debe coincidir exactamente con el nombre del `<parameter>` definido en el archivo `.jrxml` del reporte.
 
@@ -190,6 +203,50 @@ Cliente (PHP, Postman, etc.)
 
 ---
 
+### `POST /reportes/imprimir`
+
+Envía el reporte directamente a una impresora instalada en Windows (por nombre) usando `JRPrintServiceExporter`.
+
+#### Headers requeridos
+
+| Header            | Valor                               | Descripción                |
+| ----------------- | ----------------------------------- | -------------------------- |
+| `X-Service-Token` | El token configurado en el servidor | Autenticación del servicio |
+| `Content-Type`    | `application/json`                  | Tipo del cuerpo            |
+
+#### Cuerpo (JSON)
+
+```json
+{
+  "reportName": "StickerQR",
+  "printerName": "EPSON TM-T20II",
+  "copies": 1,
+  "queries": [
+    {
+      "param": "DS_STICKER",
+      "datasource": "gases",
+      "query": "SELECT ..."
+    }
+  ]
+}
+```
+
+| Campo                  | Tipo             | Obligatorio | Descripción                                            |
+| ---------------------- | ---------------- | ----------- | ------------------------------------------------------ |
+| `reportName`           | String           | Sí          | Nombre de la plantilla sin extensión                   |
+| `printerName`          | String           | Sí          | Nombre de impresora instalado en Windows               |
+| `copies`               | Integer          | No          | Número de copias; si se omite o es inválido se usa `1` |
+| `queries`              | Array de objetos | Sí          | Al menos una query                                     |
+| `queries[].param`      | String           | Sí          | Nombre del parámetro en el reporte                     |
+| `queries[].query`      | String           | Sí          | Consulta SQL                                           |
+| `queries[].datasource` | String           | No          | `"gases"` o por defecto `lab`                          |
+
+#### Respuesta exitosa (200)
+
+- Body texto: `Reporte enviado a impresión en '<printerName>' (copias: N).`
+
+---
+
 ## 6. Arquitectura y capas
 
 La API sigue los principios **SOLID** y está organizada en capas con responsabilidades claras:
@@ -197,6 +254,7 @@ La API sigue los principios **SOLID** y está organizada en capas con responsabi
 ### Capa 1 — Controller (`ReportController`)
 
 Solo se encarga de:
+
 - Recibir la petición HTTP
 - Validar el token (`X-Service-Token`)
 - Validar que el cuerpo tenga los campos requeridos
@@ -208,20 +266,27 @@ Solo se encarga de:
 ### Capa 2 — Orquestador (`ReportOrchestrator`)
 
 Coordina el flujo:
+
 1. Llama a `JasperFiller.fill()` para llenar el reporte con datos
 2. Llama a `ExporterRegistry.getExporter()` para obtener el exportador correcto
 3. Llama a `exporter.export()` para convertir a bytes
 4. Retorna un `ReportResult`
 
+Para impresión directa:
+
+1. Llama a `JasperFiller.fill()`
+2. Llama a `ReportPrintService.print()` con impresora y copias
+
 **No sabe cómo se ejecutan las queries ni cómo se exporta. Solo orquesta.**
 
 ### Capa 3 — Servicios especializados
 
-| Clase             | Responsabilidad única                                       |
-|-------------------|-------------------------------------------------------------|
-| `JasperFiller`    | Compilar `.jrxml` → `.jasper` y llenar reportes con datos   |
-| `QueryExecutor`   | Ejecutar SQL y devolver resultados como `List<Map>`         |
-| `ExporterRegistry`| Mantener un mapa de formatos → exportadores                 |
+| Clase                | Responsabilidad única                                       |
+| -------------------- | ----------------------------------------------------------- |
+| `JasperFiller`       | Compilar `.jrxml` → `.jasper` y llenar reportes con datos   |
+| `QueryExecutor`      | Ejecutar SQL en `lab` o `gases` y devolver `List<Map>`      |
+| `ReportPrintService` | Resolver impresora por nombre y enviar trabajo de impresión |
+| `ExporterRegistry`   | Mantener un mapa de formatos → exportadores                 |
 
 ### Capa 4 — Exportadores (Strategy Pattern)
 
@@ -237,11 +302,13 @@ Spring los detecta automáticamente por la anotación `@Component`. El `Exporter
 
 ### Capa 5 — Excepciones
 
-| Excepción                   | Cuándo se lanza                    | HTTP |
-|-----------------------------|------------------------------------|------|
-| `ReportNotFoundException`   | El archivo `.jasper` no existe     | 404  |
-| `InvalidFormatException`    | El formato no es PDF ni XLSX       | 400  |
-| `ReportGenerationException` | Error de SQL o de JasperReports    | 500  |
+| Excepción                   | Cuándo se lanza                  | HTTP |
+| --------------------------- | -------------------------------- | ---- |
+| `ReportNotFoundException`   | El archivo `.jasper` no existe   | 404  |
+| `InvalidFormatException`    | El formato no está soportado     | 400  |
+| `ReportGenerationException` | Error de SQL o de JasperReports  | 500  |
+| `PrinterNotFoundException`  | La impresora indicada no existe  | 400  |
+| `ReportPrintException`      | Error enviando el trabajo a cola | 500  |
 
 `GlobalExceptionHandler` captura todas y devuelve respuestas HTTP limpias.
 
@@ -254,17 +321,29 @@ Los archivos `.jrxml` son las plantillas de diseño de JasperReports. Al iniciar
 ### Reporte principal: `Laboratorio.jrxml`
 
 Define la estructura general de la página:
+
 - **columnHeader**: logo de la empresa, datos de la empresa, datos del paciente (subreporte)
 - **detail**: resultados de Variables (subreporte) + resultados Normales (subreporte)
 - **pageFooter**: direcciones y teléfonos de la empresa
 
 ### Subreportes
 
-| Archivo          | Parámetro que recibe         | Qué muestra                                    |
-|------------------|------------------------------|-------------------------------------------------|
-| `Paciente.jrxml` | `DS_ATENCION`                | Nombre, ID, edad, sexo, médico, empresa, fechas |
-| `Variables.jrxml`| Datasource directo           | Resultados tipo variable (tabla con bordes)      |
-| `Normal.jrxml`   | Datasource directo           | Resultados normales (lista con firma)            |
+| Archivo           | Parámetro que recibe | Qué muestra                                     |
+| ----------------- | -------------------- | ----------------------------------------------- |
+| `Paciente.jrxml`  | `DS_ATENCION`        | Nombre, ID, edad, sexo, médico, empresa, fechas |
+| `Variables.jrxml` | Datasource directo   | Resultados tipo variable (tabla con bordes)     |
+| `Normal.jrxml`    | Datasource directo   | Resultados normales (lista con firma)           |
+
+### Reporte `StickerQR.jrxml`
+
+`StickerQR` se alimenta por parámetro `DS_STICKER` y usa estas columnas de la consulta:
+
+- `codigo_cilindro` → código QR + texto inferior
+- `nombre_qr_grupo` → texto superior derecho
+- `capacidad_cilindro` → texto intermedio (entero, sin decimales)
+- `clase_cilindro` → solo para condición visual:
+  - si `1`: muestra `LOGO_GASES.png`
+  - si no `1`: muestra `**`
 
 ### Cómo se pasan los datos a los reportes
 
@@ -287,12 +366,12 @@ $P{DS_ATENCION}.getData().iterator().next().get("nombre")
 
 ## 8. Formatos de exportación disponibles
 
-| Formato | Content-Type | Descripción |
-|---------|--------------|-------------|
-| **PDF** | `application/pdf` | Formato de documento portátil, optimizado para impresión |
-| **XLSX** | `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet` | Hoja de cálculo Excel, datos tabulares |
-| **HTML** | `text/html` | Página web con estilos embebidos, visualización en navegador |
-| **DOCX** | `application/vnd.openxmlformats-officedocument.wordprocessingml.document` | Documento Word moderno, estructura preserva paginación |
+| Formato  | Content-Type                                                              | Descripción                                                  |
+| -------- | ------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| **PDF**  | `application/pdf`                                                         | Formato de documento portátil, optimizado para impresión     |
+| **XLSX** | `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`       | Hoja de cálculo Excel, datos tabulares                       |
+| **HTML** | `text/html`                                                               | Página web con estilos embebidos, visualización en navegador |
+| **DOCX** | `application/vnd.openxmlformats-officedocument.wordprocessingml.document` | Documento Word moderno, estructura preserva paginación       |
 
 ---
 
@@ -353,6 +432,7 @@ Spring detecta la clase por `@Component`, el `ExporterRegistry` la registra auto
 **3.** Al iniciar la API, el `.jrxml` se compila a `.jasper` automáticamente
 
 **4.** Desde el cliente, enviar la petición con:
+
 - `"reportName"`: el nombre del archivo sin extensión
 - `"queries"`: las queries cuyos `param` coincidan con los `<parameter>` del `.jrxml`
 
@@ -364,19 +444,23 @@ Spring detecta la clase por `@Component`, el `ExporterRegistry` la registra auto
 
 Archivo: `src/main/resources/application.properties`
 
-| Propiedad                              | Descripción                                | Ejemplo                              |
-|----------------------------------------|--------------------------------------------|--------------------------------------|
-| `service.token`                        | Token de autenticación del servicio        | `mi-token-seguro-2026`              |
-| `app.reportes.ruta`                    | Ruta a la carpeta de plantillas `.jrxml`   | `C:/reportes/` (debe terminar en /) |
-| `spring.datasource.url`               | URL de conexión JDBC a MySQL               | `jdbc:mysql://localhost:3306/mibd`  |
-| `spring.datasource.username`          | Usuario de la BD                           | `root`                               |
-| `spring.datasource.password`          | Contraseña de la BD                        | `password123`                        |
-| `spring.datasource.hikari.maximum-pool-size` | Máximo de conexiones simultáneas    | `10`                                 |
-| `spring.datasource.hikari.minimum-idle`      | Conexiones mínimas abiertas         | `2`                                  |
+| Propiedad                                      | Descripción                              | Ejemplo                                |
+| ---------------------------------------------- | ---------------------------------------- | -------------------------------------- |
+| `service.token`                                | Token de autenticación del servicio      | `mi-token-seguro-2026`                 |
+| `app.reportes.ruta`                            | Ruta a la carpeta de plantillas `.jrxml` | `C:/reportes/` (debe terminar en /)    |
+| `spring.datasource.lab.jdbc-url`               | JDBC URL de base principal (`lab`)       | `jdbc:mysql://host:3307/labclibajaire` |
+| `spring.datasource.lab.username`               | Usuario BD principal                     | `root`                                 |
+| `spring.datasource.lab.password`               | Contraseña BD principal                  | `***`                                  |
+| `spring.datasource.gases.jdbc-url`             | JDBC URL base secundaria (`gases`)       | `jdbc:mysql://host:3307/gases`         |
+| `spring.datasource.gases.username`             | Usuario BD secundaria                    | `root`                                 |
+| `spring.datasource.gases.password`             | Contraseña BD secundaria                 | `***`                                  |
+| `spring.datasource.*.hikari.maximum-pool-size` | Máximo de conexiones simultáneas         | `10`                                   |
+| `spring.datasource.*.hikari.minimum-idle`      | Conexiones mínimas abiertas              | `2`                                    |
 
 ### Auto-compilación de plantillas
 
 Al arrancar, `JasperFiller` revisa la carpeta `app.reportes.ruta`:
+
 - Si un `.jrxml` no tiene su `.jasper` correspondiente → lo compila
 - Si un `.jrxml` es más reciente que su `.jasper` → lo recompila
 - Si el `.jasper` está al día → no hace nada
@@ -385,17 +469,17 @@ Esto permite actualizar plantillas sin reiniciar la API manualmente (basta con r
 
 ---
 
-## 12. Ejemplo completo con Postman
+## 12. Ejemplos completos con Postman
 
 ### Configuración
 
-| Campo          | Valor                                        |
-|----------------|----------------------------------------------|
-| Método         | `POST`                                       |
-| URL            | `http://localhost:8080/reportes/generar`      |
-| Header         | `X-Service-Token: bajaire-java-service-2026` |
-| Header         | `Content-Type: application/json`             |
-| Body (raw JSON)| Ver abajo                                    |
+| Campo           | Valor                                        |
+| --------------- | -------------------------------------------- |
+| Método          | `POST`                                       |
+| URL             | `http://localhost:8080/reportes/generar`     |
+| Header          | `X-Service-Token: bajaire-java-service-2026` |
+| Header          | `Content-Type: application/json`             |
+| Body (raw JSON) | Ver abajo                                    |
 
 ### Body
 
@@ -406,18 +490,22 @@ Esto permite actualizar plantillas sin reiniciar la API manualmente (basta con r
   "queries": [
     {
       "param": "DS_EMPRESA",
+      "datasource": "lab",
       "query": "SELECT * FROM Datos_Empresa"
     },
     {
       "param": "DS_ATENCION",
+      "datasource": "lab",
       "query": "SELECT t1.*, CONCAT(T2.primnomusu, ' ', T2.segunomusu, ' ', T2.primapelli, ' ', T2.seguapelli) AS nombre, t3.Nommed AS Nommed, CONCAT(TRIM(T2.valoredad), ' ', T2.unimededad) AS edadpac, IF(t2.sexo=1, 'Masculino', 'Femenino') AS sexopac, IF(t4.nomemp IS NULL, '', t4.nomemp) AS nomemp, t2.fechanace FROM Mae_Atencion t1 LEFT JOIN mae_pacientes t2 ON t2.NumIdentUs=t1.codpac LEFT JOIN mae_medicos t3 ON t1.codmed=t3.codmed LEFT JOIN mae_empresas t4 ON t1.empresa=t4.codemp WHERE t1.codaten = 'C0011816'"
     },
     {
       "param": "DS_RESULTADOS_VARIABLES",
+      "datasource": "lab",
       "query": "SELECT t1.Codaten, ... FROM Mov_Atencion t1 ... WHERE t1.codaten = 'C0011816' AND t2.tipores = 3 ORDER BY ..."
     },
     {
       "param": "DS_RESULTADOS_NORMAL",
+      "datasource": "lab",
       "query": "SELECT t1.Codaten, ... FROM Mov_Atencion t1 ... WHERE t1.codaten = 'C0011816' AND t2.tipores = 1 ORDER BY ..."
     }
   ]
@@ -428,18 +516,36 @@ Esto permite actualizar plantillas sin reiniciar la API manualmente (basta con r
 
 En Postman, cambiar la vista a **Preview** para ver el PDF renderizado directamente, o guardar la respuesta como archivo.
 
+### Ejemplo impresión StickerQR
+
+```json
+{
+  "reportName": "StickerQR",
+  "printerName": "EPSON TM-T20II",
+  "copies": 1,
+  "queries": [
+    {
+      "param": "DS_STICKER",
+      "datasource": "gases",
+      "query": "SELECT c.codigo_cilindro, g.nombre_qr_grupo, c.capacidad_cilindro, c.clase_cilindro FROM m_cilindros c INNER JOIN m_productos p ON c.codigo_producto = p.codigo_producto INNER JOIN m_grupos g ON p.codigo_grupo = g.codigo_grupo AND p.codigo_clase = g.codigo_clase WHERE c.codigo_cilindro = 'C12029091' AND c.ldelete = 0 AND c.linhabilitado = 0"
+    }
+  ]
+}
+```
+
 ---
 
 ## 13. Códigos de respuesta HTTP
 
-| Código | Significado              | Cuándo ocurre                                                |
-|--------|--------------------------|--------------------------------------------------------------|
-| `200`  | OK                       | Reporte generado correctamente                               |
-| `400`  | Bad Request              | Falta `reportName`, `format`, o `queries` vacías/inválidas   |
-| `400`  | Bad Request              | Formato no soportado (ni PDF ni XLSX)                        |
-| `401`  | Unauthorized             | Token `X-Service-Token` faltante o incorrecto                |
-| `404`  | Not Found                | No existe el archivo `.jasper` con ese `reportName`          |
-| `500`  | Internal Server Error    | Error de SQL, error al llenar o exportar el reporte          |
+| Código | Significado           | Cuándo ocurre                                              |
+| ------ | --------------------- | ---------------------------------------------------------- |
+| `200`  | OK                    | Reporte generado correctamente                             |
+| `400`  | Bad Request           | Falta `reportName`, `format`, o `queries` vacías/inválidas |
+| `400`  | Bad Request           | Formato no soportado                                       |
+| `400`  | Bad Request           | Impresora no encontrada                                    |
+| `401`  | Unauthorized          | Token `X-Service-Token` faltante o incorrecto              |
+| `404`  | Not Found             | No existe el archivo `.jasper` con ese `reportName`        |
+| `500`  | Internal Server Error | Error de SQL, error al llenar, exportar o imprimir         |
 
 ---
 
@@ -479,19 +585,36 @@ En Postman, cambiar la vista a **Preview** para ver el PDF renderizado directame
 ## 15. Preguntas frecuentes
 
 ### "Modifiqué un .jrxml pero no veo los cambios"
+
 Reinicia la API. Al arrancar, `JasperFiller` detecta que el `.jrxml` es más reciente que el `.jasper` y lo recompila automáticamente.
 
 ### "Quiero cambiar la base de datos"
-Edita `spring.datasource.url`, `username` y `password` en `application.properties` y reinicia.
+
+Edita `spring.datasource.lab.*` y/o `spring.datasource.gases.*` en `application.properties` y reinicia.
+
+### "¿Cómo elijo en qué base ejecutar cada query?"
+
+Usa `queries[].datasource` en el body:
+
+- `"gases"` para la base secundaria
+- omitido o cualquier otro valor para la base principal (`lab`)
+
+### "¿Cómo imprimo directo a Epson TM-T20II?"
+
+Usa `POST /reportes/imprimir` con `printerName` igual al nombre instalado en Windows.
 
 ### "Quiero usar esta API para otro tipo de reporte completamente diferente"
+
 Solo necesitas: diseñar tu `.jrxml`, colocarlo en la carpeta de reportes, y llamar al endpoint con el nombre del nuevo reporte y las queries que necesite. No se modifica ningún código Java.
 
 ### "¿Puedo llamar a esta API desde cualquier lenguaje?"
+
 Sí. Solo necesitas hacer un `POST` HTTP con JSON. Funciona desde PHP, Python, JavaScript, C#, o cualquier lenguaje que soporte HTTP.
 
 ### "¿Cómo sé qué nombres de `param` usar para un reporte?"
+
 Abre el `.jrxml` del reporte y busca las etiquetas `<parameter name="...">`. Cada `name` es el valor que debes poner en `param` de la query.
 
 ### "¿Qué pasa si una query no devuelve resultados?"
+
 Se inyecta un `JRMapCollectionDataSource` vacío. El reporte manejará esa situación según su diseño (puede ocultar secciones con `printWhenExpression`).

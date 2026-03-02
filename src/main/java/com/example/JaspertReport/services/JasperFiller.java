@@ -1,6 +1,7 @@
 package com.example.JaspertReport.services;
 
 import com.example.JaspertReport.dtos.QueryParamDTO;
+import net.sf.jasperreports.engine.JRDataSource;
 import com.example.JaspertReport.exceptions.ReportGenerationException;
 import com.example.JaspertReport.exceptions.ReportNotFoundException;
 import jakarta.annotation.PostConstruct;
@@ -64,9 +65,10 @@ public class JasperFiller {
 
         try {
             Map<String, Object> params = buildParams(queries);
+            JRDataSource mainDataSource = resolveMainDataSource(reportName, params);
 
             try (InputStream in = new FileInputStream(jasperFile)) {
-                return JasperFillManager.fillReport(in, params, new JREmptyDataSource());
+                return JasperFillManager.fillReport(in, params, mainDataSource);
             }
         } catch (ReportNotFoundException e) {
             throw e;
@@ -99,5 +101,15 @@ public class JasperFiller {
         }
 
         return params;
+    }
+
+    private JRDataSource resolveMainDataSource(String reportName, Map<String, Object> params) {
+        if ("StickerQR".equalsIgnoreCase(reportName)) {
+            Object dataSource = params.get("DS_STICKER");
+            if (dataSource instanceof JRDataSource) {
+                return (JRDataSource) dataSource;
+            }
+        }
+        return new JREmptyDataSource();
     }
 }
