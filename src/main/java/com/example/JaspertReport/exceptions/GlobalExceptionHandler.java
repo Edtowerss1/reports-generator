@@ -1,10 +1,12 @@
 package com.example.JaspertReport.exceptions;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -20,6 +22,10 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ReportGenerationException.class)
     public ResponseEntity<String> handleGenerationError(ReportGenerationException e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        log.error("Error de generación de reporte", e);
+        String rootCause = e.getCause() != null && e.getCause().getMessage() != null
+                ? " | Causa: " + e.getCause().getMessage()
+                : "";
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage() + rootCause);
     }
 }

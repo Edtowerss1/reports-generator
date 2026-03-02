@@ -39,7 +39,8 @@ public class JasperFiller {
     public void compileReports() {
         File dir = new File(reportesRuta);
         File[] jrxmlFiles = dir.listFiles((d, name) -> name.endsWith(".jrxml"));
-        if (jrxmlFiles == null) return;
+        if (jrxmlFiles == null)
+            return;
 
         for (File jrxmlFile : jrxmlFiles) {
             String jasperPath = jrxmlFile.getAbsolutePath().replace(".jrxml", ".jasper");
@@ -69,7 +70,10 @@ public class JasperFiller {
             }
         } catch (ReportNotFoundException e) {
             throw e;
+        } catch (ReportGenerationException e) {
+            throw e;
         } catch (Exception e) {
+            log.error("Error al generar el reporte {}", reportName, e);
             throw new ReportGenerationException("Error al generar el reporte: " + reportName, e);
         }
     }
@@ -79,11 +83,19 @@ public class JasperFiller {
         params.put("SUBREPORT_DIR", reportesRuta);
 
         for (QueryParamDTO q : queries) {
-            List<Map<String, Object>> rows = queryExecutor.execute(q.getQuery());
-            Collection<Map<String, ?>> data = rows.stream()
-                    .map(m -> (Map<String, ?>) m)
-                    .collect(Collectors.toList());
-            params.put(q.getParam(), new JRMapCollectionDataSource(data));
+            try {
+                List<Map<String, Object>> rows = queryExecutor.execute(q.getQuery(), q.getDatasource());
+                Collection<Map<String, ?>> data = rows.stream()
+                        .map(m -> (Map<String, ?>) m)
+                        .collect(Collectors.toList());
+                params.put(q.getParam(), new JRMapCollectionDataSource(data));
+            } catch (Exception e) {
+                String datasource = q.getDatasource() == null ? "lab" : q.getDatasource();
+                String message = "Error ejecutando query para param '" + q.getParam() + "' en datasource '" + datasource
+                        + "'";
+                log.error(message + ". SQL: {}", q.getQuery(), e);
+                throw new ReportGenerationException(message, e);
+            }
         }
 
         return params;

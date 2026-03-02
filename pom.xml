@@ -82,6 +82,13 @@
 			<version>7.0.3</version>
 		</dependency>
 
+		<!-- JasperReports Barcode4J Components (QRCode, barcode4j:*) -->
+		<dependency>
+			<groupId>net.sf.jasperreports</groupId>
+			<artifactId>jasperreports-barcode4j</artifactId>
+			<version>7.0.3</version>
+		</dependency>
+
 
 		<!-- Lombok: reduce boilerplate for data classes -->
 		<dependency>

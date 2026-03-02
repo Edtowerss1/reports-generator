@@ -1,0 +1,59 @@
+	<!-- Created with Jaspersoft Studio version 7.0.3.final using JasperReports Library version 7.0.3-41034ca841d452f3305ba55b9042260aaa1ab5dd  -->
+	<jasperReport name="StickerQR" language="java" columnCount="1" pageWidth="142" pageHeight="71" columnWidth="114" leftMargin="14" rightMargin="14" topMargin="6" bottomMargin="3" uuid="36fcb506-9c4a-4664-90af-f829e1afe67d" floatColumnFooter="true">
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+		<property name="com.jaspersoft.studio.unit." value="pixel"/>
+		<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+		<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+		<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+		<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+		<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+		<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+		<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+		<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
+		<parameter name="SUBREPORT_DIR" class="java.lang.String"/>
+		<parameter name="DS_STICKER" forPrompting="false" class="net.sf.jasperreports.engine.data.JRMapCollectionDataSource"/>
+		<query language="sql"><![CDATA[]]></query>
+		<detail>
+			<band height="62" splitType="Stretch">
+				<element kind="component" uuid="e5d85442-82d5-4951-92ca-8952f947b136" x="0" y="0" width="42" height="42">
+					<component kind="barcode4j:QRCode" margin="0">
+						<codeExpression><![CDATA[String.valueOf($P{DS_STICKER}.getData().iterator().next().get("codigo_cilindro"))]]></codeExpression>
+					</component>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</element>
+				<element kind="textField" uuid="6b328af8-6e73-4b95-a688-15e90095f5fd" x="50" y="-4" width="64" height="20" fontName="DejaVu Sans" fontSize="13.0" textAdjust="ScaleFont" hTextAlign="Left" vTextAlign="Middle">
+					<expression><![CDATA[String.valueOf($P{DS_STICKER}.getData().iterator().next().get("nombre_qr_grupo"))]]></expression>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</element>
+				<element kind="textField" uuid="e18303fd-56c2-4c40-9d59-3013e8b2652b" x="50" y="9" width="64" height="20" fontName="Arial" fontSize="13.0" hTextAlign="Left" vTextAlign="Middle">
+					<expression><![CDATA[String.valueOf($P{DS_STICKER}.getData().iterator().next().get("capacidad_cilindro"))]]></expression>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</element>
+				<element kind="textField" uuid="c104dab8-1038-4411-ab95-1cf7d37422bd" x="0" y="42" width="114" height="20" fontName="Arial" fontSize="16.0" bold="true" hTextAlign="Left" vTextAlign="Middle">
+					<expression><![CDATA[String.valueOf($P{DS_STICKER}.getData().iterator().next().get("codigo_cilindro"))]]></expression>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</element>
+				<element kind="image" uuid="0676ae2a-f5a9-4338-98bf-0ab49ac1d3dd" x="60" y="16" width="54" height="26" hImageAlign="Center" vImageAlign="Bottom">
+					<printWhenExpression><![CDATA["1".equals(String.valueOf($P{DS_STICKER}.getData().iterator().next().get("clase_cilindro")))]]></printWhenExpression>
+					<expression><![CDATA[$P{SUBREPORT_DIR} + "LOGO_GASES.png"]]></expression>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</element>
+				<element kind="textField" uuid="1f93d8de-5f23-4f16-bf72-d39075b10c87" x="60" y="16" width="54" height="26" fontName="Arial" fontSize="20.0" bold="true" hTextAlign="Center" vTextAlign="Bottom">
+					<printWhenExpression><![CDATA[!"1".equals(String.valueOf($P{DS_STICKER}.getData().iterator().next().get("clase_cilindro")))]]></printWhenExpression>
+					<expression><![CDATA["**"]]></expression>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</element>
+			</band>
+		</detail>
+	</jasperReport>
