@@ -22,19 +22,19 @@
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</element>
-				<element kind="textField" uuid="6b328af8-6e73-4b95-a688-15e90095f5fd" x="50" y="-4" width="64" height="20" fontName="DejaVu Sans" fontSize="13.0" textAdjust="ScaleFont" hTextAlign="Left" vTextAlign="Middle">
+				<element kind="textField" uuid="6b328af8-6e73-4b95-a688-15e90095f5fd" x="50" y="-4" width="64" height="20" fontName="Arial" fontSize="14.0" bold="true" textAdjust="ScaleFont" hTextAlign="Left" vTextAlign="Middle">
 					<expression><![CDATA[String.valueOf($P{DS_STICKER}.getData().iterator().next().get("nombre_qr_grupo"))]]></expression>
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 				</element>
-				<element kind="textField" uuid="e18303fd-56c2-4c40-9d59-3013e8b2652b" x="50" y="9" width="64" height="20" fontName="Arial" fontSize="13.0" hTextAlign="Left" vTextAlign="Middle">
-					<expression><![CDATA[String.valueOf($P{DS_STICKER}.getData().iterator().next().get("capacidad_cilindro"))]]></expression>
+				<element kind="textField" uuid="e18303fd-56c2-4c40-9d59-3013e8b2652b" x="50" y="9" width="64" height="20" fontName="Arial" fontSize="14.0" bold="true" hTextAlign="Left" vTextAlign="Middle">
+					<expression><![CDATA[String.valueOf(new java.math.BigDecimal(String.valueOf($P{DS_STICKER}.getData().iterator().next().get("capacidad_cilindro"))).intValue())]]></expression>
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 				</element>
-				<element kind="textField" uuid="c104dab8-1038-4411-ab95-1cf7d37422bd" x="0" y="42" width="114" height="20" fontName="Arial" fontSize="16.0" bold="true" hTextAlign="Left" vTextAlign="Middle">
+				<element kind="textField" uuid="c104dab8-1038-4411-ab95-1cf7d37422bd" x="0" y="42" width="114" height="20" fontName="Arial" fontSize="14.0" bold="true" hTextAlign="Left" vTextAlign="Middle">
 					<expression><![CDATA[String.valueOf($P{DS_STICKER}.getData().iterator().next().get("codigo_cilindro"))]]></expression>
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
@@ -47,7 +47,7 @@
 					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
 				</element>
-				<element kind="textField" uuid="1f93d8de-5f23-4f16-bf72-d39075b10c87" x="60" y="16" width="54" height="26" fontName="Arial" fontSize="20.0" bold="true" hTextAlign="Center" vTextAlign="Bottom">
+				<element kind="textField" uuid="1f93d8de-5f23-4f16-bf72-d39075b10c87" x="60" y="16" width="54" height="26" fontName="Arial" fontSize="14.0" bold="true" hTextAlign="Center" vTextAlign="Bottom">
 					<printWhenExpression><![CDATA[!"1".equals(String.valueOf($P{DS_STICKER}.getData().iterator().next().get("clase_cilindro")))]]></printWhenExpression>
 					<expression><![CDATA["**"]]></expression>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>

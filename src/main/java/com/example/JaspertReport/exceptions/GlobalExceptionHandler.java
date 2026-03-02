@@ -28,4 +28,18 @@ public class GlobalExceptionHandler {
                 : "";
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage() + rootCause);
     }
+
+    @ExceptionHandler(PrinterNotFoundException.class)
+    public ResponseEntity<String> handlePrinterNotFound(PrinterNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
+
+    @ExceptionHandler(ReportPrintException.class)
+    public ResponseEntity<String> handlePrintError(ReportPrintException e) {
+        log.error("Error de impresión de reporte", e);
+        String rootCause = e.getCause() != null && e.getCause().getMessage() != null
+                ? " | Causa: " + e.getCause().getMessage()
+                : "";
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage() + rootCause);
+    }
 }

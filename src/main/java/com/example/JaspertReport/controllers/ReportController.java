@@ -1,5 +1,6 @@
 package com.example.JaspertReport.controllers;
 
+import com.example.JaspertReport.dtos.PrintRequestDTO;
 import com.example.JaspertReport.dtos.ReportRequestDTO;
 import com.example.JaspertReport.dtos.ReportResult;
 import com.example.JaspertReport.services.ReportOrchestrator;
@@ -47,13 +48,46 @@ public class ReportController {
                 .body(result.getContent());
     }
 
+    @PostMapping("/imprimir")
+    public ResponseEntity<?> imprimir(
+            @RequestHeader("X-Service-Token") String token,
+            @RequestBody PrintRequestDTO request) {
+
+        if (!serviceToken.equals(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        if (!isValidPrintRequest(request)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("El cuerpo debe incluir reportName, printerName y al menos una query con param y query.");
+        }
+
+        reportOrchestrator.print(request);
+        int copies = request.getCopies() == null || request.getCopies() < 1 ? 1 : request.getCopies();
+
+        return ResponseEntity
+                .ok("Reporte enviado a impresión en '" + request.getPrinterName() + "' (copias: " + copies + ").");
+    }
+
     private boolean isValidRequest(ReportRequestDTO request) {
-        if (request.getReportName() == null || request.getReportName().isBlank()) return false;
-        if (request.getFormat() == null || request.getFormat().isBlank()) return false;
-        if (request.getQueries() == null || request.getQueries().isEmpty()) return false;
-        return request.getQueries().stream().allMatch(q ->
-                q.getParam() != null && !q.getParam().isBlank()
-                && q.getQuery() != null && !q.getQuery().isBlank()
-        );
+        if (request.getReportName() == null || request.getReportName().isBlank())
+            return false;
+        if (request.getFormat() == null || request.getFormat().isBlank())
+            return false;
+        if (request.getQueries() == null || request.getQueries().isEmpty())
+            return false;
+        return request.getQueries().stream().allMatch(q -> q.getParam() != null && !q.getParam().isBlank()
+                && q.getQuery() != null && !q.getQuery().isBlank());
+    }
+
+    private boolean isValidPrintRequest(PrintRequestDTO request) {
+        if (request.getReportName() == null || request.getReportName().isBlank())
+            return false;
+        if (request.getPrinterName() == null || request.getPrinterName().isBlank())
+            return false;
+        if (request.getQueries() == null || request.getQueries().isEmpty())
+            return false;
+        return request.getQueries().stream().allMatch(q -> q.getParam() != null && !q.getParam().isBlank()
+                && q.getQuery() != null && !q.getQuery().isBlank());
     }
 }
