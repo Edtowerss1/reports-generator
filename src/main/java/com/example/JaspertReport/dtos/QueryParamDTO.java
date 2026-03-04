@@ -8,9 +8,9 @@ public class QueryParamDTO {
     private String query;
 
     /**
-     * Nombre del datasource a usar para esta consulta.
-     * Valores posibles: "primary" (por defecto) o "gases".
-     * Si se omite, se usa la BD principal (DB_NAME).
+     * Campo mantenido por compatibilidad con clientes existentes.
+     * En la arquitectura actual de servicios separados, cada instancia
+     * conecta a una única BD, por lo que este valor es ignorado.
      */
     private String datasource;
 }

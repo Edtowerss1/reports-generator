@@ -92,9 +92,8 @@ public class JasperFiller {
                         .collect(Collectors.toList());
                 params.put(q.getParam(), new JRMapCollectionDataSource(data));
             } catch (Exception e) {
-                String datasource = q.getDatasource() == null ? "lab" : q.getDatasource();
-                String message = "Error ejecutando query para param '" + q.getParam() + "' en datasource '" + datasource
-                        + "'";
+                String datasource = q.getDatasource() == null ? "default" : q.getDatasource();
+                String message = "Error ejecutando query para param '" + q.getParam() + "'";
                 log.error(message + ". SQL: {}", q.getQuery(), e);
                 throw new ReportGenerationException(message, e);
             }

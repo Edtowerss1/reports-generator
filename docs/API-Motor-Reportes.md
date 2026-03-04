@@ -477,7 +477,7 @@ Esto permite actualizar plantillas sin reiniciar la API manualmente (basta con r
 | --------------- | -------------------------------------------- |
 | Método          | `POST`                                       |
 | URL             | `http://localhost:8080/reportes/generar`     |
-| Header          | `X-Service-Token: bajaire-java-service-2026` |
+| Header          | `X-Service-Token: java-service-2026` |
 | Header          | `Content-Type: application/json`             |
 | Body (raw JSON) | Ver abajo                                    |
 
