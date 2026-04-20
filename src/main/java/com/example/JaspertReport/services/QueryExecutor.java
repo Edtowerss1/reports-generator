@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Ejecuta consultas SQL contra la única base de datos configurada
@@ -28,6 +29,7 @@ public class QueryExecutor {
      *                   con clientes existentes que aún lo envían.
      */
     public List<Map<String, Object>> execute(String sql, String datasource) {
+        Objects.requireNonNull(sql, "sql debe ser no nulo");
         return jdbcTemplate.queryForList(sql);
     }
 }
