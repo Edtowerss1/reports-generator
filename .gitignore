@@ -33,8 +33,6 @@ src/main/resources/application-*.yml
 
 # Deployment & Infrastructure (SENSITIVE)
 deploy/
-scripts/
-INSTRUCCIONES_DISTRIBUCION.md
 
 # Build artifacts & Distribution
 installer-output/

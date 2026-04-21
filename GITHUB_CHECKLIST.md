@@ -5,7 +5,7 @@
 - [x] ❌ NO hay credenciales de BD en `.gitignore` tracked
 - [x] ❌ NO hay tokens hardcodeados en código fuente
 - [x] ❌ NO hay `deploy/` en git (eliminado del historial)
-- [x] ❌ NO hay `scripts/` sensibles en git (eliminado del historial)
+- [x] ✅ `scripts/` versionado (genérico, sin credenciales)
 - [x] ✅ `application.properties` está en `.gitignore`
 - [x] ✅ `application.properties.example` tiene valores genéricos
 - [x] ✅ Variables de entorno configuradas en `application.properties`

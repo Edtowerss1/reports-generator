@@ -8,8 +8,8 @@ Tu proyecto **JaspertReport** está 100% limpio y listo para publicar en GitHub.
 
 ### 1. **Eliminación de archivos sensibles** (del historial)
 - ✅ Removidos: `deploy/` (2 archivos de credenciales)
-- ✅ Removidos: `scripts/` (5 archivos de infraestructura)
-- ✅ Removidos: `INSTRUCCIONES_DISTRIBUCION.md`
+- ✅ Reintegrados: `scripts/` (scripts de despliegue y operación, genéricos)
+- ✅ Movido: `INSTRUCCIONES_DISTRIBUCION.md` → `docs/Distribucion-Bundle-Portable.md`
 - ✅ Actualizado: `.gitignore` con exclusiones completas
 
 ### 2. **Limpieza de configuración**
@@ -37,7 +37,7 @@ Tu proyecto **JaspertReport** está 100% limpio y listo para publicar en GitHub.
 ✅ NO hay IPs/puertos hardcodeados
 ✅ NO hay tokens en histórico
 ✅ deploy/ completamente eliminado de git
-✅ scripts/ completamente eliminado de git
+✅ scripts/ versionado en git (sin credenciales)
 ✅ .gitignore protege application.properties
 ```
 
@@ -71,7 +71,7 @@ Tu proyecto **JaspertReport** está 100% limpio y listo para publicar en GitHub.
 4. **Verifica en GitHub:**
    - Ve a https://github.com/TU_USUARIO/JaspertReport
    - Confirma que ves: `README.md`, `LICENSE`, `CONTRIBUTING.md`
-   - Verifica que NO hay carpetas: `deploy/`, `scripts/`
+   - Verifica que NO hay carpetas sensibles: `deploy/`
 
 ### Opción B: Si ya existe un repositorio remoto
 
@@ -149,8 +149,8 @@ JaspertReport/
 **Lo que NO está en git (y NO debería estar):**
 ```
 ❌ deploy/
-❌ scripts/
-❌ INSTRUCCIONES_DISTRIBUCION.md
+✅ scripts/
+✅ docs/Distribucion-Bundle-Portable.md
 ❌ installer-output/
 ❌ .idea/
 ❌ .vscode/
@@ -204,11 +204,15 @@ git show 44abe58 --stat
    - Completar sus propios datos
    - Nunca commitear credenciales
 
-2. **`deploy/` y `scripts/` se eliminaron** - Son específicos de tu infraestructura:
-   - Están en tu disco local (no eliminados, solo de git)
-   - Seguirán siendo ignorados
+2. **`deploy/` se mantiene fuera de git** - Es específico de tu infraestructura y contiene configuración local:
+   - Está en tu disco local (no eliminado, solo fuera de git)
+   - Sigue ignorado para evitar exponer credenciales
 
-3. **Variables de entorno en producción:**
+3. **`scripts/` está en git** - Flujo operativo reutilizable y documentado:
+   - Scripts genéricos (`instance-a` / `instance-b`)
+   - Sin credenciales ni secretos
+
+4. **Variables de entorno en producción:**
    ```bash
    export SERVICE_TOKEN=tu-token-secreto
    export DB_URL=jdbc:mysql://tuhost:3306/tubd
