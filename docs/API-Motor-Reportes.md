@@ -186,7 +186,7 @@ Cliente (PHP, Postman, etc.)
 
 | Campo                  | Tipo             | Obligatorio | Descripción                                                   |
 | ---------------------- | ---------------- | ----------- | ------------------------------------------------------------- |
-| `reportName`           | String           | Sí          | Nombre de la plantilla sin extensión (ej: `"Laboratorio"`)    |
+| `reportName`           | String           | Sí          | Nombre de la plantilla sin extensión (ej: `"YourReportName"`) |
 | `format`               | String           | Sí          | Formato de salida: `"PDF"`, `"XLSX"`, `"HTML"`, `"DOCX"`      |
 | `queries`              | Array de objetos | Sí          | Al menos una query                                            |
 | `queries[].param`      | String           | Sí          | Nombre del parámetro en el reporte `.jrxml`                   |
@@ -239,7 +239,7 @@ Envía el reporte directamente a una impresora instalada en Windows (por nombre)
 | `queries`              | Array de objetos | Sí          | Al menos una query                                     |
 | `queries[].param`      | String           | Sí          | Nombre del parámetro en el reporte                     |
 | `queries[].query`      | String           | Sí          | Consulta SQL                                           |
-| `queries[].datasource` | String           | No          | `"gases"` o por defecto `lab`                          |
+| `queries[].datasource` | String           | No          | `"primary"` o `"secondary"` datasource (por defecto `primary`) |
 
 #### Respuesta exitosa (200)
 
@@ -555,11 +555,11 @@ En Postman, cambiar la vista a **Preview** para ver el PDF renderizado directame
 
 ```json
 {
-  "reportName": "Laboratorio",
+  "reportName": "YourReportName",
   "format": "HTML",
   "queries": [
-    { "param": "DS_EMPRESA", "query": "SELECT * FROM Datos_Empresa" },
-    { "param": "DS_ATENCION", "query": "SELECT ... FROM Mae_Atencion ..." }
+    { "param": "DS_MAIN", "query": "SELECT * FROM your_main_table" },
+    { "param": "DS_DETAIL", "query": "SELECT ... FROM your_detail_table ..." }
   ]
 }
 ```
@@ -572,7 +572,7 @@ En Postman, cambiar la vista a **Preview** para ver el PDF renderizado directame
 
 ```json
 {
-  "reportName": "Laboratorio",
+  "reportName": "YourReportName",
   "format": "DOCX",
   "queries": [ ... ]
 }

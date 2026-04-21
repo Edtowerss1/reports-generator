@@ -52,18 +52,12 @@ Cada instalación puede tener sus propios logos sin conflictos.
 
 ```
 reportes/
-├── Laboratorio.jrxml
-├── Laboratorio.jasper
-├── Paciente.jrxml
-├── Paciente.jasper
-├── Normal.jrxml
-├── Normal.jasper
-├── Variables.jrxml
-├── Variables.jasper
-├── StickerQR.jrxml
-├── StickerQR.jasper
-├── Logo.jpg               ← Tu logo aquí
-├── Watermark.png          ← Marca de agua si quieres
+├── YourReport.jrxml
+├── YourReport.jasper
+├── SubreportExample.jrxml
+├── SubreportExample.jasper
+├── Logo.jpg               ← Your logo here
+├── Watermark.png          ← Your watermark if needed
 └── .gitkeep
 ```
 

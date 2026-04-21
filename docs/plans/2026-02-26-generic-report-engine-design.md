@@ -7,7 +7,7 @@
 
 ## Contexto
 
-La API actual expone un único endpoint `POST /reportes/atencion` acoplado al reporte `Laboratorio.jasper`. Recibe 3 queries fijas, las mapea a DTOs tipados y siempre exporta en PDF. El objetivo es reemplazarlo por un motor genérico que soporte cualquier `.jasper`, N queries con nombre explícito y múltiples formatos de salida (PDF, XLSX).
+La API actual expone un único endpoint `POST /reportes/atencion` acoplado a un reporte específico. Recibe 3 queries fijas, las mapea a DTOs tipados y siempre exporta en PDF. El objetivo es reemplazarlo por un motor genérico que soporte cualquier `.jasper`, N queries con nombre explícito y múltiples formatos de salida (PDF, XLSX).
 
 ---
 
@@ -58,7 +58,7 @@ Header: X-Service-Token: <token>
 Content-Type: application/json
 
 {
-  "reportName": "Laboratorio",
+  "reportName": "sample-report",
   "format": "PDF",
   "queries": [
     { "param": "DS_EMPRESA",   "query": "SELECT * FROM empresa WHERE row_id = 1" },
@@ -136,8 +136,8 @@ La lógica de filtrado por `tipores` que hoy vive en Java se elimina; el filtro 
 
 ## Clases eliminadas
 
-- `LabReportController.java` — reemplazado por `ReportController.java`
-- `LabReportService.java` — reemplazado por `ReportOrchestrator.java` + `JasperFiller.java`
+- `LegacyReportController.java` — reemplazado por `ReportController.java`
+- `LegacyReportService.java` — reemplazado por `ReportOrchestrator.java` + `JasperFiller.java`
 - `ReportDataService.java` — reemplazado por `QueryExecutor.java`
 - DTOs tipados: `DatosEmpresaDTO.java`, `AtencionDTO.java`, `ResultadoExamenDTO.java`
 
