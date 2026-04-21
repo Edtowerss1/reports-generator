@@ -58,3 +58,8 @@ Thumbs.db
 .classpath
 .factorypath
 .sts4-cache
+# Image files and logos (user-provided)
+src/main/resources/reportes/*.jpg
+src/main/resources/reportes/*.png
+src/main/resources/reportes/*.gif
+src/main/resources/reportes/*.jpeg
