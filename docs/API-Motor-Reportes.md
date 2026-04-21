@@ -64,8 +64,8 @@ src/main/java/com/example/JaspertReport/
 │   └── ReportResult.java                ← Resultado: bytes + tipo + extensión
 │
 ├── config/
-│   ├── LabDataSourceConfig.java         ← DataSource principal (laboratorio)
-│   └── GasesDataSourceConfig.java       ← DataSource secundario (gases)
+│   ├── PrimaryDataSourceConfig.java     ← DataSource principal
+│   └── SecondaryDataSourceConfig.java   ← DataSource secundario
 │
 ├── services/
 │   ├── ReportOrchestrator.java          ← Orquesta todo el flujo
@@ -96,13 +96,13 @@ src/main/resources/
 │   ├── fonts.xml                        ← Definición de familia Arial
 │   ├── arial.ttf, arialbd.ttf, ...      ← Archivos de fuente
 └── reportes/
-    ├── Laboratorio.jrxml / .jasper      ← Reporte principal
-    ├── Paciente.jrxml / .jasper         ← Subreporte: datos del paciente
-    ├── Variables.jrxml / .jasper        ← Subreporte: resultados tipo variable
-    ├── Normal.jrxml / .jasper           ← Subreporte: resultados normales
-  ├── StickerQR.jrxml / .jasper        ← Sticker QR para impresión
-  ├── Logo.jpg                         ← Logo de la empresa
-  └── LOGO_GASES.png                   ← Logo usado en StickerQR
+    ├── YourReportName.jrxml / .jasper   ← Reporte de ejemplo
+    ├── SubreportA.jrxml / .jasper        ← Subreporte ejemplo A
+    ├── SubreportB.jrxml / .jasper        ← Subreporte ejemplo B
+    ├── SubreportC.jrxml / .jasper        ← Subreporte ejemplo C
+    ├── PrintingReport.jrxml / .jasper    ← Ejemplo para impresión
+    ├── Logo.png                          ← Logo genérico
+    └── .gitkeep                          ← Placeholder para carpeta
 ```
 
 ---
@@ -169,16 +169,16 @@ Cliente (PHP, Postman, etc.)
 
 ```json
 {
-  "reportName": "Laboratorio",
+  "reportName": "YourReportName",
   "format": "PDF",
   "queries": [
     {
-      "param": "DS_EMPRESA",
-      "query": "SELECT * FROM Datos_Empresa"
+      "param": "DS_MAIN",
+      "query": "SELECT * FROM your_main_table"
     },
     {
-      "param": "DS_ATENCION",
-      "query": "SELECT t1.*, ... FROM Mae_Atencion t1 WHERE ..."
+      "param": "DS_SECONDARY",
+      "query": "SELECT t1.*, ... FROM your_secondary_table t1 WHERE ..."
     }
   ]
 }
@@ -191,7 +191,7 @@ Cliente (PHP, Postman, etc.)
 | `queries`              | Array de objetos | Sí          | Al menos una query                                            |
 | `queries[].param`      | String           | Sí          | Nombre del parámetro en el reporte `.jrxml`                   |
 | `queries[].query`      | String           | Sí          | Consulta SQL a ejecutar contra la BD                          |
-| `queries[].datasource` | String           | No          | Base de datos a usar por query: `"gases"` o por defecto `lab` |
+| `queries[].datasource` | String           | No          | Base de datos a usar por query: `"secondary"` o por defecto `primary` |
 
 **Importante:** El valor de `param` debe coincidir exactamente con el nombre del `<parameter>` definido en el archivo `.jrxml` del reporte.
 
@@ -218,13 +218,13 @@ Envía el reporte directamente a una impresora instalada en Windows (por nombre)
 
 ```json
 {
-  "reportName": "StickerQR",
-  "printerName": "EPSON TM-T20II",
+  "reportName": "PrintingReport",
+  "printerName": "Your-Printer-Name",
   "copies": 1,
   "queries": [
     {
-      "param": "DS_STICKER",
-      "datasource": "gases",
+      "param": "DS_PRINTING",
+      "datasource": "secondary",
       "query": "SELECT ..."
     }
   ]
@@ -284,7 +284,7 @@ Para impresión directa:
 | Clase                | Responsabilidad única                                       |
 | -------------------- | ----------------------------------------------------------- |
 | `JasperFiller`       | Compilar `.jrxml` → `.jasper` y llenar reportes con datos   |
-| `QueryExecutor`      | Ejecutar SQL en `lab` o `gases` y devolver `List<Map>`      |
+| `QueryExecutor`      | Ejecutar SQL en base de datos principal o secundaria |
 | `ReportPrintService` | Resolver impresora por nombre y enviar trabajo de impresión |
 | `ExporterRegistry`   | Mantener un mapa de formatos → exportadores                 |
 
@@ -318,32 +318,32 @@ Spring los detecta automáticamente por la anotación `@Component`. El `Exporter
 
 Los archivos `.jrxml` son las plantillas de diseño de JasperReports. Al iniciar la aplicación, `JasperFiller` las compila automáticamente a `.jasper` (solo si el `.jrxml` es más reciente).
 
-### Reporte principal: `Laboratorio.jrxml`
+### Reporte principal: `YourReportName.jrxml`
 
-Define la estructura general de la página:
+Define la estructura general de la página con secciones customizables:
 
-- **columnHeader**: logo de la empresa, datos de la empresa, datos del paciente (subreporte)
-- **detail**: resultados de Variables (subreporte) + resultados Normales (subreporte)
-- **pageFooter**: direcciones y teléfonos de la empresa
+- **columnHeader**: logo, datos generales, datos de entrada (subreporte)
+- **detail**: resultados y detalles (subreportes)
+- **pageFooter**: información adicional y pie de página
 
 ### Subreportes
 
-| Archivo           | Parámetro que recibe | Qué muestra                                     |
-| ----------------- | -------------------- | ----------------------------------------------- |
-| `Paciente.jrxml`  | `DS_ATENCION`        | Nombre, ID, edad, sexo, médico, empresa, fechas |
-| `Variables.jrxml` | Datasource directo   | Resultados tipo variable (tabla con bordes)     |
-| `Normal.jrxml`    | Datasource directo   | Resultados normales (lista con firma)           |
+| Archivo              | Parámetro que recibe | Qué muestra                                |
+| -------------------- | -------------------- | ------------------------------------------ |
+| `SubreportA.jrxml`   | `DS_SUBREPORT_A`     | Datos del primer nivel de detalles         |
+| `SubreportB.jrxml`   | `DS_SUBREPORT_B`     | Datos del segundo nivel (tabla/lista)      |
+| `SubreportC.jrxml`   | `DS_SUBREPORT_C`     | Datos del tercer nivel o summary           |
 
-### Reporte `StickerQR.jrxml`
+### Reporte `PrintingReport.jrxml` (para impresión directa)
 
-`StickerQR` se alimenta por parámetro `DS_STICKER` y usa estas columnas de la consulta:
+`PrintingReport` se alimenta por parámetro `DS_PRINTING` y usa estas columnas de la consulta (customizables):
 
-- `codigo_cilindro` → código QR + texto inferior
-- `nombre_qr_grupo` → texto superior derecho
-- `capacidad_cilindro` → texto intermedio (entero, sin decimales)
-- `clase_cilindro` → solo para condición visual:
-  - si `1`: muestra `LOGO_GASES.png`
-  - si no `1`: muestra `**`
+- `code` → código principal
+- `description` → texto descriptivo
+- `quantity` → cantidad/valor
+- `status` → condición visual o clasificador
+
+Se puede adaptar para cualquier formato de impresión cambiando el diseño del `.jrxml`.
 
 ### Cómo se pasan los datos a los reportes
 
@@ -446,14 +446,14 @@ Archivo: `src/main/resources/application.properties`
 
 | Propiedad                                      | Descripción                              | Ejemplo                                |
 | ---------------------------------------------- | ---------------------------------------- | -------------------------------------- |
-| `service.token`                                | Token de autenticación del servicio      | `mi-token-seguro-2026`                 |
+| `service.token`                                | Token de autenticación del servicio      | `your-service-token-2026`              |
 | `app.reportes.ruta`                            | Ruta a la carpeta de plantillas `.jrxml` | `C:/reportes/` (debe terminar en /)    |
-| `spring.datasource.lab.jdbc-url`               | JDBC URL de base principal (`lab`)       | `jdbc:mysql://host:3307/labclibajaire` |
-| `spring.datasource.lab.username`               | Usuario BD principal                     | `root`                                 |
-| `spring.datasource.lab.password`               | Contraseña BD principal                  | `***`                                  |
-| `spring.datasource.gases.jdbc-url`             | JDBC URL base secundaria (`gases`)       | `jdbc:mysql://host:3307/gases`         |
-| `spring.datasource.gases.username`             | Usuario BD secundaria                    | `root`                                 |
-| `spring.datasource.gases.password`             | Contraseña BD secundaria                 | `***`                                  |
+| `spring.datasource.primary.jdbc-url`           | JDBC URL de base de datos principal      | `jdbc:mysql://your-db-host:3306/your_primary_db` |
+| `spring.datasource.primary.username`           | Usuario BD principal                     | `your_username`                        |
+| `spring.datasource.primary.password`           | Contraseña BD principal                  | `***`                                  |
+| `spring.datasource.secondary.jdbc-url`         | JDBC URL de base de datos secundaria     | `jdbc:mysql://your-db-host:3306/your_secondary_db` |
+| `spring.datasource.secondary.username`         | Usuario BD secundaria                    | `your_username`                        |
+| `spring.datasource.secondary.password`         | Contraseña BD secundaria                 | `***`                                  |
 | `spring.datasource.*.hikari.maximum-pool-size` | Máximo de conexiones simultáneas         | `10`                                   |
 | `spring.datasource.*.hikari.minimum-idle`      | Conexiones mínimas abiertas              | `2`                                    |
 
@@ -477,7 +477,7 @@ Esto permite actualizar plantillas sin reiniciar la API manualmente (basta con r
 | --------------- | -------------------------------------------- |
 | Método          | `POST`                                       |
 | URL             | `http://localhost:8080/reportes/generar`     |
-| Header          | `X-Service-Token: java-service-2026` |
+| Header          | `X-Service-Token: your-service-token` |
 | Header          | `Content-Type: application/json`             |
 | Body (raw JSON) | Ver abajo                                    |
 
@@ -485,28 +485,28 @@ Esto permite actualizar plantillas sin reiniciar la API manualmente (basta con r
 
 ```json
 {
-  "reportName": "Laboratorio",
+  "reportName": "YourReportName",
   "format": "PDF",
   "queries": [
     {
-      "param": "DS_EMPRESA",
-      "datasource": "lab",
-      "query": "SELECT * FROM Datos_Empresa"
+      "param": "DS_MAIN",
+      "datasource": "primary",
+      "query": "SELECT * FROM your_main_table"
     },
     {
-      "param": "DS_ATENCION",
-      "datasource": "lab",
-      "query": "SELECT t1.*, CONCAT(T2.primnomusu, ' ', T2.segunomusu, ' ', T2.primapelli, ' ', T2.seguapelli) AS nombre, t3.Nommed AS Nommed, CONCAT(TRIM(T2.valoredad), ' ', T2.unimededad) AS edadpac, IF(t2.sexo=1, 'Masculino', 'Femenino') AS sexopac, IF(t4.nomemp IS NULL, '', t4.nomemp) AS nomemp, t2.fechanace FROM Mae_Atencion t1 LEFT JOIN mae_pacientes t2 ON t2.NumIdentUs=t1.codpac LEFT JOIN mae_medicos t3 ON t1.codmed=t3.codmed LEFT JOIN mae_empresas t4 ON t1.empresa=t4.codemp WHERE t1.codaten = 'C0011816'"
+      "param": "DS_DETAIL_1",
+      "datasource": "primary",
+      "query": "SELECT t1.*, t2.field_name FROM your_detail_table t1 LEFT JOIN another_table t2 ON t1.id = t2.id WHERE t1.id = 'EXAMPLE_ID'"
     },
     {
-      "param": "DS_RESULTADOS_VARIABLES",
-      "datasource": "lab",
-      "query": "SELECT t1.Codaten, ... FROM Mov_Atencion t1 ... WHERE t1.codaten = 'C0011816' AND t2.tipores = 3 ORDER BY ..."
+      "param": "DS_DETAIL_2",
+      "datasource": "primary",
+      "query": "SELECT * FROM your_results_table WHERE condition = true ORDER BY field_name"
     },
     {
-      "param": "DS_RESULTADOS_NORMAL",
-      "datasource": "lab",
-      "query": "SELECT t1.Codaten, ... FROM Mov_Atencion t1 ... WHERE t1.codaten = 'C0011816' AND t2.tipores = 1 ORDER BY ..."
+      "param": "DS_DETAIL_3",
+      "datasource": "primary",
+      "query": "SELECT * FROM another_results_table WHERE status = 'active' ORDER BY date_field"
     }
   ]
 }
@@ -520,14 +520,14 @@ En Postman, cambiar la vista a **Preview** para ver el PDF renderizado directame
 
 ```json
 {
-  "reportName": "StickerQR",
-  "printerName": "EPSON TM-T20II",
+  "reportName": "PrintingReport",
+  "printerName": "Your-Windows-Printer-Name",
   "copies": 1,
   "queries": [
     {
-      "param": "DS_STICKER",
-      "datasource": "gases",
-      "query": "SELECT c.codigo_cilindro, g.nombre_qr_grupo, c.capacidad_cilindro, c.clase_cilindro FROM m_cilindros c INNER JOIN m_productos p ON c.codigo_producto = p.codigo_producto INNER JOIN m_grupos g ON p.codigo_grupo = g.codigo_grupo AND p.codigo_clase = g.codigo_clase WHERE c.codigo_cilindro = 'C12029091' AND c.ldelete = 0 AND c.linhabilitado = 0"
+      "param": "DS_PRINTING",
+      "datasource": "secondary",
+      "query": "SELECT code, description, quantity, status FROM your_printing_table WHERE active = 1"
     }
   ]
 }
@@ -590,18 +590,18 @@ Reinicia la API. Al arrancar, `JasperFiller` detecta que el `.jrxml` es más rec
 
 ### "Quiero cambiar la base de datos"
 
-Edita `spring.datasource.lab.*` y/o `spring.datasource.gases.*` en `application.properties` y reinicia.
+Edita `spring.datasource.primary.*` y/o `spring.datasource.secondary.*` en `application.properties` y reinicia.
 
 ### "¿Cómo elijo en qué base ejecutar cada query?"
 
 Usa `queries[].datasource` en el body:
 
-- `"gases"` para la base secundaria
-- omitido o cualquier otro valor para la base principal (`lab`)
+- `"secondary"` para la base de datos secundaria
+- omitido o cualquier otro valor para la base de datos principal (`primary`)
 
-### "¿Cómo imprimo directo a Epson TM-T20II?"
+### "¿Cómo imprimo directo a una impresora térmica o de etiquetas?"
 
-Usa `POST /reportes/imprimir` con `printerName` igual al nombre instalado en Windows.
+Usa `POST /reportes/imprimir` con `printerName` igual al nombre instalado en Windows. Funciona con cualquier impresora disponible en el sistema.
 
 ### "Quiero usar esta API para otro tipo de reporte completamente diferente"
 

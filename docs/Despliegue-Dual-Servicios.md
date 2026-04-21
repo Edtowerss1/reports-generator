@@ -1,6 +1,6 @@
-# Despliegue Dual de Servicios — Laboratorio y Gases
+# Despliegue Dual de Instancias — Arquitectura Multi-Servicio
 
-Este documento describe el proceso completo para desplegar dos instancias independientes del motor de reportes JaspertReport como servicios Windows, una para la empresa de **Laboratorio** y otra para la empresa de **Gases**.
+Este documento describe el proceso completo para desplegar dos instancias independientes del motor de reportes JaspertReport como servicios Windows en la misma máquina, cada una conectada a una base de datos diferente.
 
 ---
 
@@ -9,18 +9,18 @@ Este documento describe el proceso completo para desplegar dos instancias indepe
 ```
 JaspertReport.jar (único binario)
     │
-    ├─ Servicio: JaspertReport-Lab   → Puerto 8080
-    │     C:\servicios\lab\
+    ├─ Servicio: JaspertReport-Instance-A  → Puerto 8080
+    │     C:\servicios\instancia-a\
     │     ├── JaspertReport.exe
-    │     ├── application.properties   ← BD labclibajaire
-    │     ├── reportes\                ← plantillas .jrxml del laboratorio
+    │     ├── application.properties        ← Configuración instancia A
+    │     ├── reportes\                     ← Plantillas .jrxml de A
     │     └── logs\
     │
-    └─ Servicio: JaspertReport-Gases  → Puerto 8081
-          C:\servicios\gases\
+    └─ Servicio: JaspertReport-Instance-B  → Puerto 8081
+          C:\servicios\instancia-b\
           ├── JaspertReport.exe
-          ├── application.properties   ← BD gases
-          ├── reportes\                ← plantillas .jrxml de gases
+          ├── application.properties        ← Configuración instancia B
+          ├── reportes\                     ← Plantillas .jrxml de B
           └── logs\
 ```
 
@@ -63,58 +63,58 @@ Los archivos relevantes para este despliegue son:
 ```
 proyecto/
 ├── deploy/
-│   ├── lab/
-│   │   └── application.properties     ← config instancia Laboratorio
-│   └── gases/
-│       └── application.properties     ← config instancia Gases
+│   ├── instance-a/
+│   │   └── application.properties     ← Configuración instancia A
+│   └── instance-b/
+│       └── application.properties     ← Configuración instancia B
 └── scripts/
-    ├── build-portable-exe.ps1          ← genera el bundle portable
-    ├── install-dual-services.ps1       ← instala ambos servicios
-    ├── build-and-deploy.ps1            ← build + install en un paso
-    └── manage-services.ps1             ← gestión diaria
+    ├── build-portable-exe.ps1          ← Genera el bundle portable
+    ├── install-dual-services.ps1       ← Instala ambas instancias
+    ├── build-and-deploy.ps1            ← Build + install en un paso
+    └── manage-services.ps1             ← Gestión diaria
 ```
 
 ---
 
 ## Configuración de cada instancia
 
-### `deploy/lab/application.properties`
+### `deploy/instance-a/application.properties`
 
 ```properties
-spring.application.name=JaspertReport-Lab
+spring.application.name=JaspertReport-Instance-A
 server.port=8080
 server.address=0.0.0.0
 
-service.token=java-service-lab-2026
-app.reportes.ruta=C:/servicios/lab/reportes/
+service.token=your-instance-a-token-here
+app.reportes.ruta=C:/servicios/instancia-a/reportes/
 
-spring.datasource.url=jdbc:mysql://HOST:PORT/labclibajaire?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&zeroDateTimeBehavior=CONVERT_TO_NULL
-spring.datasource.username=USUARIO
-spring.datasource.password=CONTRASEÑA
+spring.datasource.url=jdbc:mysql://YOUR_DB_HOST:YOUR_DB_PORT/your_database_a?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&zeroDateTimeBehavior=CONVERT_TO_NULL
+spring.datasource.username=your_db_user
+spring.datasource.password=your_db_password
 spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 spring.datasource.hikari.maximum-pool-size=10
 spring.datasource.hikari.minimum-idle=2
 ```
 
-### `deploy/gases/application.properties`
+### `deploy/instance-b/application.properties`
 
 ```properties
-spring.application.name=JaspertReport-Gases
+spring.application.name=JaspertReport-Instance-B
 server.port=8081
 server.address=0.0.0.0
 
-service.token=java-service-gases-2026
-app.reportes.ruta=C:/servicios/gases/reportes/
+service.token=your-instance-b-token-here
+app.reportes.ruta=C:/servicios/instancia-b/reportes/
 
-spring.datasource.url=jdbc:mysql://HOST:PORT/gases?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&zeroDateTimeBehavior=CONVERT_TO_NULL
-spring.datasource.username=USUARIO
-spring.datasource.password=CONTRASEÑA
+spring.datasource.url=jdbc:mysql://YOUR_DB_HOST:YOUR_DB_PORT/your_database_b?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&zeroDateTimeBehavior=CONVERT_TO_NULL
+spring.datasource.username=your_db_user
+spring.datasource.password=your_db_password
 spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 spring.datasource.hikari.maximum-pool-size=10
 spring.datasource.hikari.minimum-idle=2
 ```
 
-> **Importante:** Ajusta los valores de `HOST`, `PORT`, `USUARIO` y `CONTRASEÑA` según el entorno antes de desplegar.
+> **Importante:** Ajusta los valores de `YOUR_DB_HOST`, `YOUR_DB_PORT`, `your_database_a`, `your_database_b`, `your_db_user`, `your_db_password`, y los tokens según tu entorno antes de desplegar.
 
 ---
 
@@ -159,8 +159,8 @@ Bundle portable creado exitosamente en:
 .\scripts\install-dual-services.ps1
 ```
 
-Este script realiza por cada instancia (Lab y Gases):
-1. Crea el directorio del servicio (`C:\servicios\lab\` y `C:\servicios\gases\`)
+Este script realiza por cada instancia:
+1. Crea el directorio del servicio (`C:\servicios\instancia-a\` y `C:\servicios\instancia-b\`)
 2. Copia el bundle portable completo
 3. Copia el `application.properties` correspondiente al directorio raíz del servicio
 4. Copia las plantillas `.jrxml` a la carpeta `reportes\`
@@ -169,8 +169,8 @@ Este script realiza por cada instancia (Lab y Gases):
 
 Resultado esperado:
 ```
-[OK] Servicio 'JaspertReport-Lab' registrado correctamente.
-[OK] Servicio 'JaspertReport-Gases' registrado correctamente.
+[OK] Servicio 'JaspertReport-Instance-A' registrado correctamente.
+[OK] Servicio 'JaspertReport-Instance-B' registrado correctamente.
 ```
 
 ---
@@ -181,8 +181,8 @@ Esperar ~15 segundos para que Spring Boot arranque completamente:
 
 ```powershell
 Start-Sleep -Seconds 15
-nssm status JaspertReport-Lab
-nssm status JaspertReport-Gases
+nssm status JaspertReport-Instance-A
+nssm status JaspertReport-Instance-B
 ```
 
 Ambos deben mostrar: `SERVICE_RUNNING`
@@ -206,14 +206,14 @@ Respuesta esperada de cada uno:
 ### Paso 6 — Verificar en los logs el puerto y BD
 
 ```powershell
-Get-Content C:\servicios\lab\logs\stdout.log -Tail 20
-Get-Content C:\servicios\gases\logs\stdout.log -Tail 20
+Get-Content C:\servicios\instancia-a\logs\stdout.log -Tail 20
+Get-Content C:\servicios\instancia-b\logs\stdout.log -Tail 20
 ```
 
 En el log de cada servicio deberías ver:
 ```
-Tomcat started on port(s): 8080   ← en lab
-Tomcat started on port(s): 8081   ← en gases
+Tomcat started on port(s): 8080   ← en instancia A
+Tomcat started on port(s): 8081   ← en instancia B
 Started JaspertReportApplication in X.XXX seconds
 ```
 
@@ -221,33 +221,32 @@ Started JaspertReportApplication in X.XXX seconds
 
 ### Paso 7 — Probar cada endpoint
 
-**Laboratorio** (`POST /reportes/generar`):
+**Instancia A** (`POST /reportes/generar`):
 ```powershell
 Invoke-RestMethod -Uri "http://localhost:8080/reportes/generar" `
   -Method POST `
-  -Headers @{ "X-Service-Token" = "java-service-lab-2026" } `
+  -Headers @{ "X-Service-Token" = "your-instance-a-token-here" } `
   -ContentType "application/json" `
   -Body '{
-    "reportName": "Laboratorio",
+    "reportName": "YourReportName",
     "format": "PDF",
     "queries": [
-      { "param": "DS_EMPRESA", "query": "SELECT 1 AS test" }
+      { "param": "DS_PARAM", "query": "SELECT 1 AS test" }
     ]
   }'
 ```
 
-**Gases** (`POST /reportes/imprimir`):
+**Instancia B** (`POST /reportes/generar` o `/reportes/imprimir`):
 ```powershell
-Invoke-RestMethod -Uri "http://localhost:8081/reportes/imprimir" `
+Invoke-RestMethod -Uri "http://localhost:8081/reportes/generar" `
   -Method POST `
-  -Headers @{ "X-Service-Token" = "java-service-gases-2026" } `
+  -Headers @{ "X-Service-Token" = "your-instance-b-token-here" } `
   -ContentType "application/json" `
   -Body '{
-    "reportName": "StickerQR",
-    "printerName": "EPSON TM-T20II",
-    "copies": 1,
+    "reportName": "AnotherReport",
+    "format": "PDF",
     "queries": [
-      { "param": "DS_STICKER", "query": "SELECT 1 AS test" }
+      { "param": "DS_PARAM", "query": "SELECT 1 AS test" }
     ]
   }'
 ```
@@ -266,12 +265,12 @@ Se utiliza el script `manage-services.ps1`:
 .\scripts\manage-services.ps1 -Action restart
 
 # Reiniciar solo uno
-.\scripts\manage-services.ps1 -Action restart -Target lab
-.\scripts\manage-services.ps1 -Action restart -Target gases
+.\scripts\manage-services.ps1 -Action restart -Target instance-a
+.\scripts\manage-services.ps1 -Action restart -Target instance-b
 
 # Ver logs
-.\scripts\manage-services.ps1 -Action logs -Target lab
-.\scripts\manage-services.ps1 -Action logs -Target gases
+.\scripts\manage-services.ps1 -Action logs -Target instance-a
+.\scripts\manage-services.ps1 -Action logs -Target instance-b
 
 # Detener ambos
 .\scripts\manage-services.ps1 -Action stop
@@ -280,7 +279,7 @@ Se utiliza el script `manage-services.ps1`:
 .\scripts\manage-services.ps1 -Action start
 ```
 
-También pueden administrarse desde `services.msc` buscando `JaspertReport-Lab` y `JaspertReport-Gases`.
+También pueden administrarse desde `services.msc` buscando `JaspertReport-Instance-A` y `JaspertReport-Instance-B`.
 
 ---
 
@@ -308,30 +307,30 @@ O en un solo paso:
 
 ---
 
-## Distribuir un servicio a otra máquina
+## Distribuir una instancia a otra máquina
 
 Para llevar una instancia a la máquina destino no necesitas copiar el código fuente ni tener Maven ni JDK allá. El script `package-service.ps1` genera un ZIP autocontenido con todo lo necesario.
 
 ### En la máquina de desarrollo — Generar el paquete
 
 ```powershell
-# Para laboratorio
-.\scripts\package-service.ps1 -Instance lab
+# Para instancia A
+.\scripts\package-service.ps1 -Instance instance-a
 
-# Para gases
-.\scripts\package-service.ps1 -Instance gases
+# Para instancia B
+.\scripts\package-service.ps1 -Instance instance-b
 ```
 
 El ZIP se genera en la carpeta `dist\` del proyecto:
 ```
 dist\
-├── JaspertReport-lab-package.zip
-└── JaspertReport-gases-package.zip
+├── JaspertReport-instance-a-package.zip
+└── JaspertReport-instance-b-package.zip
 ```
 
 Contenido del ZIP:
 ```
-JaspertReport-lab-package.zip
+JaspertReport-instance-a-package.zip
 ├── bundle\              ← JaspertReport.exe + Java Runtime (no requiere Java en destino)
 ├── application.properties  ← config de esa instancia (puerto, BD, token, rutas)
 ├── reportes\            ← plantillas .jrxml y .jasper
@@ -348,12 +347,12 @@ JaspertReport-lab-package.zip
 4. Ejecuta:
 
 ```powershell
-cd C:\temp\JaspertReport-lab-package
+cd C:\temp\JaspertReport-instance-a-package
 .\install.ps1
 ```
 
 El script hace todo automáticamente:
-- Crea `C:\servicios\lab\` (o `gases\`)
+- Crea `C:\servicios\instancia-a\` (o `instancia-b\`)
 - Copia el bundle, `application.properties` y reportes
 - Registra el servicio con NSSM con inicio automático
 - Inicia el servicio y muestra el estado final
@@ -363,7 +362,7 @@ El script hace todo automáticamente:
 Invoke-RestMethod -Uri "http://localhost:8080/actuator/health"
 ```
 
-> **Nota:** antes de empaquetar, **edita** el archivo `deploy\lab\application.properties` (o `deploy\gases\application.properties`) con la URL/credenciales de base de datos que corresponde a la máquina destino, el token que usará esa empresa y cualquier otro ajuste local. El ZIP contiene esa copia exacta, por lo que si olvidas cambiarlo el servicio levantará con la configuración de tu entorno de desarrollo. Mantén un control de versiones de las configuraciones específicas por cliente para evitar confusiones.
+> **Nota:** Antes de empaquetar, **edita** el archivo `deploy\instance-a\application.properties` (o `deploy\instance-b\application.properties`) con la URL/credenciales de base de datos que corresponde a la máquina destino, el token que usará esa instancia y cualquier otro ajuste local. El ZIP contiene esa copia exacta, por lo que si olvidas cambiarlo el servicio levantará con la configuración de tu entorno de desarrollo. Mantén un control de versiones de las configuraciones específicas por instancia para evitar confusiones.
 
 ---
 
@@ -372,11 +371,11 @@ Invoke-RestMethod -Uri "http://localhost:8080/actuator/health"
 Si cambiaron plantillas pero no el código Java, no es necesario recompilar. Solo copia los archivos:
 
 ```powershell
-# Laboratorio
-Copy-Item src\main\resources\reportes\* C:\servicios\lab\reportes\ -Force
+# Instancia A
+Copy-Item src\main\resources\reportes\* C:\servicios\instancia-a\reportes\ -Force
 
-# Gases
-Copy-Item src\main\resources\reportes\* C:\servicios\gases\reportes\ -Force
+# Instancia B
+Copy-Item src\main\resources\reportes\* C:\servicios\instancia-b\reportes\ -Force
 ```
 
 La aplicación recompila los `.jrxml` automáticamente al siguiente request si detecta que el `.jasper` es más antiguo.
@@ -388,14 +387,14 @@ La aplicación recompila los `.jrxml` automáticamente al siguiente request si d
 ### Servicio queda en `SERVICE_PAUSED`
 
 ```powershell
-nssm restart JaspertReport-Lab
-nssm restart JaspertReport-Gases
+nssm restart JaspertReport-Instance-A
+nssm restart JaspertReport-Instance-B
 ```
 
 Si persiste, revisar el stderr:
 ```powershell
-Get-Content C:\servicios\lab\logs\stderr.log -Tail 30
-Get-Content C:\servicios\gases\logs\stderr.log -Tail 30
+Get-Content C:\servicios\instancia-a\logs\stderr.log -Tail 30
+Get-Content C:\servicios\instancia-b\logs\stderr.log -Tail 30
 ```
 
 ### Log vacío y "Failed to launch JVM"
@@ -403,20 +402,20 @@ Get-Content C:\servicios\gases\logs\stderr.log -Tail 30
 Verificar que el archivo `app\JaspertReport.cfg` **no contenga** la línea `spring.config.location`. Si la tiene, eliminarla:
 
 ```powershell
-(Get-Content "C:\servicios\gases\app\JaspertReport.cfg") |
+(Get-Content "C:\servicios\instancia-b\app\JaspertReport.cfg") |
   Where-Object { $_ -notmatch "spring\.config\.location" } |
-  Set-Content "C:\servicios\gases\app\JaspertReport.cfg"
+  Set-Content "C:\servicios\instancia-b\app\JaspertReport.cfg"
 ```
 
-Luego reiniciar: `nssm restart JaspertReport-Gases`
+Luego reiniciar: `nssm restart JaspertReport-Instance-B`
 
 ### El servicio levanta pero responde en el puerto equivocado
 
 Verificar que el `application.properties` en la raíz del directorio del servicio tenga el `server.port` correcto:
 
 ```powershell
-Get-Content C:\servicios\lab\application.properties | Select-String "server.port"
-Get-Content C:\servicios\gases\application.properties | Select-String "server.port"
+Get-Content C:\servicios\instancia-a\application.properties | Select-String "server.port"
+Get-Content C:\servicios\instancia-b\application.properties | Select-String "server.port"
 ```
 
 ### Error de conexión a la base de datos
@@ -425,9 +424,15 @@ Revisar los logs de cada instancia y verificar que las credenciales en `applicat
 
 ---
 
-## Resumen de puertos y tokens
+## Resumen de puertos y configuración
 
-| Instancia | Servicio Windows | Puerto | Token | Endpoint principal |
+| Instancia | Servicio Windows | Puerto | Variable Importante | Endpoint principal |
 |---|---|---|---|---|
-| Laboratorio | `JaspertReport-Lab` | `8080` | `java-service-lab-2026` | `POST /reportes/generar` |
-| Gases | `JaspertReport-Gases` | `8081` | `java-service-gases-2026` | `POST /reportes/imprimir` |
+| Instance A | `JaspertReport-Instance-A` | `8080` | `service.token` (token-a) | `POST /reportes/generar` |
+| Instance B | `JaspertReport-Instance-B` | `8081` | `service.token` (token-b) | `POST /reportes/generar` |
+
+Cada instancia debe tener su propio `application.properties` con valores únicos para:
+- `server.port`
+- `service.token`
+- `spring.datasource.url` (base de datos diferente)
+- `app.reportes.ruta` (carpeta de plantillas diferente)

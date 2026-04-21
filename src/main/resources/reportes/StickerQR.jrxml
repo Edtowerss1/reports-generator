@@ -44,13 +44,13 @@
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</element>
-				<element kind="image" uuid="0676ae2a-f5a9-4338-98bf-0ab49ac1d3dd" x="60" y="16" width="54" height="26" hImageAlign="Center" vImageAlign="Bottom">
-					<printWhenExpression><![CDATA["1".equals(String.valueOf($F{clase_cilindro}))]]></printWhenExpression>
-					<expression><![CDATA[$P{SUBREPORT_DIR} + "LOGO_GASES.png"]]></expression>
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.x" value="px"/>
-				</element>
+			<element kind="image" uuid="0676ae2a-f5a9-4338-98bf-0ab49ac1d3dd" x="60" y="16" width="54" height="26" hImageAlign="Center" vImageAlign="Bottom">
+				<printWhenExpression><![CDATA["1".equals(String.valueOf($F{clase_cilindro}))]]></printWhenExpression>
+				<expression><![CDATA[$P{SUBREPORT_DIR} + "Logo.png"]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+			</element>
 				<element kind="textField" uuid="1f93d8de-5f23-4f16-bf72-d39075b10c87" x="60" y="16" width="54" height="26" fontName="Arial" fontSize="14.0" bold="true" hTextAlign="Center" vTextAlign="Bottom">
 					<printWhenExpression><![CDATA[!"1".equals(String.valueOf($F{clase_cilindro}))]]></printWhenExpression>
 					<expression><![CDATA["**"]]></expression>
