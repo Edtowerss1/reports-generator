@@ -67,3 +67,6 @@ src/main/resources/reportes/*.jpeg
 # AI Agent Configuration (local development only)
 .agents/
 .claude/
+.atl/
+.opencode/
+skills-lock.json
