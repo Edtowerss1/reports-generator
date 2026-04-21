@@ -30,9 +30,9 @@ Tradicionalmente, cada nuevo reporte requería:
 - **🎨 Generación Dinámica** - Múltiples reportes sin tocar código
 - **📊 Multi-Formato** - PDF, XLSX, DOCX, HTML (extensible)
 - **⚙️ Compilación Automática** - `.jrxml` se compila on-demand
-- **🗂️ Multi-Datasource** - Cada query puede apuntar a BD diferente
+- **🗂️ Configuración por Instancia** - Cada instancia conecta a su propia BD
 - **🖨️ Impresión Directa** - Envía a impresoras del sistema sin exportar
-- **🔒 Autenticación Token** - Protección por token Bearer
+- **🔒 Autenticación por Header** - Protección con `X-Service-Token`
 - **🏗️ Arquitectura Extensible** - Patrón Strategy para exporters
 - **📝 Logging Centralizado** - Trazabilidad completa
 - **⚡ Rendimiento** - HikariCP, compilación en caché
@@ -222,7 +222,7 @@ curl -X POST http://localhost:8080/reportes/generar \
 | `queries` | Array | ✅ | Lista de queries con parámetros |
 | `queries[].param` | String | ✅ | Nombre del parámetro en el reporte (ej: `DS_EMPRESA`) |
 | `queries[].query` | String | ✅ | Query SQL a ejecutar |
-| `queries[].datasource` | String | ❌ | Datasource alternativo (default si omite) |
+| `queries[].datasource` | String | ❌ | Campo legacy: se ignora en la arquitectura actual |
 
 **Respuestas:**
 
@@ -324,7 +324,7 @@ Si tienes Docker instalado, puedes levantar rápidamente MySQL:
 docker-compose up -d
 ```
 
-Edita `docker-compose.yml` según necesites.
+> Nota: este repositorio no incluye `docker-compose.yml` por defecto. Si querés usar Docker, creá el archivo con el ejemplo de esta guía.
 
 ---
 

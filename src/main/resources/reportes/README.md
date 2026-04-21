@@ -63,4 +63,4 @@ reportes/
 
 ---
 
-**Ver:** [DEPLOYMENT.md](../DEPLOYMENT.md) para instrucciones de setup completo.
+**Ver:** [DEPLOYMENT.md](../../../../DEPLOYMENT.md) para instrucciones de setup completo.

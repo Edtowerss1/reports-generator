@@ -387,6 +387,9 @@ docker logs -f jaspertreport
 docker stop jaspertreport
 ```
 
+> Nota: este repositorio no incluye `Dockerfile` por defecto.
+> Si querés usar Docker local, crealo con base en el ejemplo de `PRODUCTION.md`.
+
 ---
 
 ## 📚 Recursos

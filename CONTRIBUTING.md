@@ -8,7 +8,7 @@ Por favor, sé respetuoso con otros colaboradores. El acoso, la discriminación 
 
 ## 🐛 ¿Encontraste un Bug?
 
-1. **Verifica** que el bug no haya sido reportado en [Issues](../../issues)
+1. **Verifica** que el bug no haya sido reportado en [Issues](https://github.com/Edtowerss1/reports-generator/issues)
 2. **Abre una Issue** con el siguiente formato:
 
 ```markdown
@@ -35,7 +35,7 @@ Qué está pasando.
 
 ## 🎯 ¿Tienes una idea de mejora?
 
-1. Usa [GitHub Discussions](../../discussions) para proponer ideas
+1. Usa [GitHub Discussions](https://github.com/Edtowerss1/reports-generator/discussions) para proponer ideas
 2. Describe claramente:
    - Qué problema resuelve
    - Casos de uso
@@ -134,7 +134,7 @@ Cambios importantes van a `CHANGELOG.md` (si existe).
 
 ## ❓ ¿Preguntas?
 
-- Abre una [Discussion](../../discussions)
+- Abre una [Discussion](https://github.com/Edtowerss1/reports-generator/discussions)
 - Revisa la documentación en `docs/`
 
 ---

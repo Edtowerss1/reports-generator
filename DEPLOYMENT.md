@@ -311,3 +311,10 @@ server.ssl.key-store-type=JKS
 - **Issues:** https://github.com/tuusuario/JaspertReport/issues
 - **API Docs:** Ver `docs/API-Motor-Reportes.md`
 
+---
+
+## ℹ️ Nota sobre Docker
+
+Los ejemplos de Docker/Docker Compose en esta guía son de referencia.
+Este repositorio no incluye `Dockerfile` ni `docker-compose.yml` por defecto.
+Si deseas desplegar con Docker, crea esos archivos usando los ejemplos de esta documentación y adáptalos a tu entorno.

@@ -11,7 +11,7 @@
 7. [Plantillas JRXML y subreportes](#7-plantillas-jrxml-y-subreportes)
 8. [Cómo agregar un nuevo formato de exportación](#8-cómo-agregar-un-nuevo-formato-de-exportación)
 9. [Cómo agregar un nuevo reporte](#9-cómo-agregar-un-nuevo-reporte)
-10. [Configuración](#10-configuración)
+10. [Cómo agregar un nuevo reporte](#10-cómo-agregar-un-nuevo-reporte)
 11. [Configuración](#11-configuración)
 12. [Ejemplos completos con Postman](#12-ejemplos-completos-con-postman)
 13. [Códigos de respuesta HTTP](#13-códigos-de-respuesta-http)
@@ -62,10 +62,6 @@ src/main/java/com/example/JaspertReport/
 │   ├── PrintRequestDTO.java             ← Cuerpo del JSON para impresión directa
 │   ├── QueryParamDTO.java               ← Cada query con su nombre
 │   └── ReportResult.java                ← Resultado: bytes + tipo + extensión
-│
-├── config/
-│   ├── PrimaryDataSourceConfig.java     ← DataSource principal
-│   └── SecondaryDataSourceConfig.java   ← DataSource secundario
 │
 ├── services/
 │   ├── ReportOrchestrator.java          ← Orquesta todo el flujo
@@ -191,7 +187,7 @@ Cliente (PHP, Postman, etc.)
 | `queries`              | Array de objetos | Sí          | Al menos una query                                            |
 | `queries[].param`      | String           | Sí          | Nombre del parámetro en el reporte `.jrxml`                   |
 | `queries[].query`      | String           | Sí          | Consulta SQL a ejecutar contra la BD                          |
-| `queries[].datasource` | String           | No          | Base de datos a usar por query: `"secondary"` o por defecto `primary` |
+| `queries[].datasource` | String           | No          | Campo legacy (compatibilidad): actualmente se ignora |
 
 **Importante:** El valor de `param` debe coincidir exactamente con el nombre del `<parameter>` definido en el archivo `.jrxml` del reporte.
 
@@ -239,7 +235,7 @@ Envía el reporte directamente a una impresora instalada en Windows (por nombre)
 | `queries`              | Array de objetos | Sí          | Al menos una query                                     |
 | `queries[].param`      | String           | Sí          | Nombre del parámetro en el reporte                     |
 | `queries[].query`      | String           | Sí          | Consulta SQL                                           |
-| `queries[].datasource` | String           | No          | `"primary"` o `"secondary"` datasource (por defecto `primary`) |
+| `queries[].datasource` | String           | No          | Campo legacy (compatibilidad): actualmente se ignora |
 
 #### Respuesta exitosa (200)
 
@@ -284,7 +280,7 @@ Para impresión directa:
 | Clase                | Responsabilidad única                                       |
 | -------------------- | ----------------------------------------------------------- |
 | `JasperFiller`       | Compilar `.jrxml` → `.jasper` y llenar reportes con datos   |
-| `QueryExecutor`      | Ejecutar SQL en base de datos principal o secundaria |
+| `QueryExecutor`      | Ejecutar SQL en la única base de datos configurada en la instancia |
 | `ReportPrintService` | Resolver impresora por nombre y enviar trabajo de impresión |
 | `ExporterRegistry`   | Mantener un mapa de formatos → exportadores                 |
 
@@ -448,12 +444,9 @@ Archivo: `src/main/resources/application.properties`
 | ---------------------------------------------- | ---------------------------------------- | -------------------------------------- |
 | `service.token`                                | Token de autenticación del servicio      | `your-service-token-2026`              |
 | `app.reportes.ruta`                            | Ruta a la carpeta de plantillas `.jrxml` | `C:/reportes/` (debe terminar en /)    |
-| `spring.datasource.primary.jdbc-url`           | JDBC URL de base de datos principal      | `jdbc:mysql://your-db-host:3306/your_primary_db` |
-| `spring.datasource.primary.username`           | Usuario BD principal                     | `your_username`                        |
-| `spring.datasource.primary.password`           | Contraseña BD principal                  | `***`                                  |
-| `spring.datasource.secondary.jdbc-url`         | JDBC URL de base de datos secundaria     | `jdbc:mysql://your-db-host:3306/your_secondary_db` |
-| `spring.datasource.secondary.username`         | Usuario BD secundaria                    | `your_username`                        |
-| `spring.datasource.secondary.password`         | Contraseña BD secundaria                 | `***`                                  |
+| `spring.datasource.url`                        | JDBC URL de base de datos de la instancia | `jdbc:mysql://your-db-host:3306/your_db` |
+| `spring.datasource.username`                   | Usuario de base de datos                 | `your_username`                        |
+| `spring.datasource.password`                   | Contraseña de base de datos              | `***`                                  |
 | `spring.datasource.*.hikari.maximum-pool-size` | Máximo de conexiones simultáneas         | `10`                                   |
 | `spring.datasource.*.hikari.minimum-idle`      | Conexiones mínimas abiertas              | `2`                                    |
 
@@ -590,14 +583,13 @@ Reinicia la API. Al arrancar, `JasperFiller` detecta que el `.jrxml` es más rec
 
 ### "Quiero cambiar la base de datos"
 
-Edita `spring.datasource.primary.*` y/o `spring.datasource.secondary.*` en `application.properties` y reinicia.
+Edita `spring.datasource.url`, `spring.datasource.username` y `spring.datasource.password` en `application.properties` y reinicia.
 
 ### "¿Cómo elijo en qué base ejecutar cada query?"
 
-Usa `queries[].datasource` en el body:
+En la arquitectura actual no se elige por query. Cada instancia del servicio usa una única base de datos definida en su `application.properties`.
 
-- `"secondary"` para la base de datos secundaria
-- omitido o cualquier otro valor para la base de datos principal (`primary`)
+`queries[].datasource` se mantiene solo por compatibilidad con clientes existentes y actualmente se ignora.
 
 ### "¿Cómo imprimo directo a una impresora térmica o de etiquetas?"
 

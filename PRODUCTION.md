@@ -576,4 +576,12 @@ tail -f /var/log/nginx/jaspertreport_access.log | awk '{print $4}' | uniq -c
 
 ---
 
+## ℹ️ Nota sobre artefactos Docker
+
+Las secciones Docker de este documento son plantillas de referencia.
+El repositorio no incluye `Dockerfile` ni `docker-compose.yml` listos para usar.
+Para producción con contenedores, crea esos archivos en tu infraestructura siguiendo estos ejemplos y ajustando secretos, imágenes y rutas.
+
+---
+
 **¡Tu aplicación está lista para producción!** 🎉
