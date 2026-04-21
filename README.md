@@ -113,7 +113,26 @@ src/main/java/com/example/JaspertReport/
 
 ---
 
-## 🚀 Instalación y Configuración
+## 📖 Documentación por Audiencia
+
+- **👤 Usuarios finales:** Ver [DEPLOYMENT.md](DEPLOYMENT.md)
+  - Instalar ejecutable portable
+  - Instalar JAR o Docker
+  - Solución de problemas
+  
+- **👨‍💻 Desarrolladores:** Ver [DEVELOPMENT.md](DEVELOPMENT.md)
+  - Setup de desarrollo local
+  - Tests y debugging
+  - Agregar nuevas features
+  
+- **🚀 DevOps/Producción:** Ver [PRODUCTION.md](PRODUCTION.md)
+  - Deployment seguro
+  - Multi-instancia
+  - Monitoreo y backups
+
+---
+
+## 🚀 Instalación y Configuración (Quick Start)
 
 ### 1. Clonar el repositorio
 
