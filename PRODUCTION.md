@@ -193,150 +193,6 @@ journalctl -u jaspertreport -f  # Logs en vivo
 
 ---
 
-## 🐳 Deployment Opción B: Docker + Docker Compose
-
-### Paso 1: Crear Dockerfile
-
-```dockerfile
-# Dockerfile
-FROM eclipse-temurin:17-jre-alpine
-
-WORKDIR /app
-
-# Copia el JAR
-COPY target/JaspertReport-0.0.1-SNAPSHOT.jar app.jar
-
-# Variables de entorno
-ENV SERVICE_TOKEN=dev
-ENV DB_URL=jdbc:mysql://mysql:3306/reportes
-ENV DB_USER=root
-ENV DB_PASSWORD=root
-ENV REPORTES_RUTA=/app/reportes/
-ENV SERVER_PORT=8080
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
-  CMD java -cp app.jar com.example.JaspertReport.health.HealthCheck || exit 1
-
-# Volúmenes
-VOLUME ["/app/reportes", "/app/logs"]
-
-EXPOSE 8080
-
-ENTRYPOINT ["java", "-jar", "app.jar"]
-```
-
-### Paso 2: Docker Compose
-
-```yaml
-# docker-compose.yml
-version: '3.8'
-
-services:
-  mysql:
-    image: mysql:8.0
-    container_name: jaspertreport_mysql
-    environment:
-      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/db_password
-      MYSQL_DATABASE: reportes
-      MYSQL_USER: jasper_user
-      MYSQL_PASSWORD_FILE: /run/secrets/db_app_password
-    ports:
-      - "3306:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
-    secrets:
-      - db_password
-      - db_app_password
-    restart: always
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  jaspertreport:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: jaspertreport
-    depends_on:
-      mysql:
-        condition: service_healthy
-    environment:
-      SERVICE_TOKEN_FILE: /run/secrets/service_token
-      DB_URL: jdbc:mysql://mysql:3306/reportes
-      DB_USER: jasper_user
-      DB_PASSWORD_FILE: /run/secrets/db_app_password
-      REPORTES_RUTA: /app/reportes/
-      SERVER_PORT: 8080
-    ports:
-      - "8080:8080"
-    volumes:
-      - ./reportes:/app/reportes
-      - ./logs:/app/logs
-    secrets:
-      - service_token
-      - db_app_password
-    restart: always
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/reportes/generar"]
-      interval: 30s
-      timeout: 3s
-      retries: 3
-
-  nginx:
-    image: nginx:latest
-    container_name: jaspertreport_nginx
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./certs:/etc/nginx/certs:ro
-      - ./html:/usr/share/nginx/html:ro
-    depends_on:
-      - jaspertreport
-    restart: always
-
-secrets:
-  service_token:
-    file: ./secrets/service_token.txt
-  db_password:
-    file: ./secrets/db_password.txt
-  db_app_password:
-    file: ./secrets/db_app_password.txt
-
-volumes:
-  mysql_data:
-```
-
-### Paso 3: Crear secretos
-
-```bash
-mkdir -p secrets
-
-echo "$(openssl rand -hex 32)" > secrets/service_token.txt
-echo "$(openssl rand -base64 32)" > secrets/db_password.txt
-echo "$(openssl rand -base64 32)" > secrets/db_app_password.txt
-
-chmod 600 secrets/*.txt
-```
-
-### Paso 4: Ejecutar
-
-```bash
-docker-compose up -d
-
-# Logs
-docker-compose logs -f jaspertreport
-
-# Detener
-docker-compose down
-```
-
----
-
 ## 🔧 Nginx como Proxy Reverso
 
 ```nginx
@@ -471,11 +327,6 @@ jobs:
       - name: Build
         run: mvn clean package -DskipTests
       
-      - name: Push Docker image
-        run: |
-          docker build -t registry.example.com/jaspertreport:latest .
-          docker push registry.example.com/jaspertreport:latest
-      
       - name: Deploy SSH
         uses: appleboy/ssh-action@master
         with:
@@ -484,38 +335,8 @@ jobs:
           key: ${{ secrets.PROD_SSH_KEY }}
           script: |
             cd /opt/jaspertreport
-            docker-compose pull
-            docker-compose up -d
+            sudo systemctl restart jaspertreport
 ```
-
----
-
-## 📈 Escalabilidad
-
-### Multi-instancia
-
-```yaml
-# docker-compose.yml con múltiples instancias
-  jaspertreport-1:
-    build: .
-    ports:
-      - "8001:8080"
-    # ...
-
-  jaspertreport-2:
-    build: .
-    ports:
-      - "8002:8080"
-    # ...
-
-  jaspertreport-3:
-    build: .
-    ports:
-      - "8003:8080"
-    # ...
-```
-
-Nginx balanceará automáticamente.
 
 ---
 
@@ -573,14 +394,6 @@ mysql -h db-prod -u root -p -e "SHOW PROCESSLIST;"
 # Requests por segundo
 tail -f /var/log/nginx/jaspertreport_access.log | awk '{print $4}' | uniq -c
 ```
-
----
-
-## ℹ️ Nota sobre artefactos Docker
-
-Las secciones Docker de este documento son plantillas de referencia.
-El repositorio no incluye `Dockerfile` ni `docker-compose.yml` listos para usar.
-Para producción con contenedores, crea esos archivos en tu infraestructura siguiendo estos ejemplos y ajustando secretos, imágenes y rutas.
 
 ---
 

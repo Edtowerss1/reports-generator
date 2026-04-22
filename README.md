@@ -316,18 +316,6 @@ fetch('/reportes/generar', {
 
 ---
 
-## 🔧 Desarrollo Local con Docker (Opcional)
-
-Si tienes Docker instalado, puedes levantar rápidamente MySQL:
-
-```bash
-docker-compose up -d
-```
-
-> Nota: este repositorio no incluye `docker-compose.yml` por defecto. Si querés usar Docker, creá el archivo con el ejemplo de esta guía.
-
----
-
 ## 🧪 Testing
 
 ```bash

@@ -364,34 +364,6 @@ Luego en IDE: Run → Edit Configurations → + Debug (remote)
 
 ---
 
-## 🚀 Deploy Local Docker
-
-```bash
-# Build imagen
-docker build -t jaspertreport:latest .
-
-# Run contenedor
-docker run -d \
-  --name jaspertreport \
-  -p 8080:8080 \
-  -e SERVICE_TOKEN=dev-token \
-  -e DB_URL=jdbc:mysql://host.docker.internal:3306/jaspertreport_dev \
-  -e DB_USER=root \
-  -e DB_PASSWORD=root \
-  jaspertreport:latest
-
-# Ver logs
-docker logs -f jaspertreport
-
-# Parar
-docker stop jaspertreport
-```
-
-> Nota: este repositorio no incluye `Dockerfile` por defecto.
-> Si querés usar Docker local, crealo con base en el ejemplo de `PRODUCTION.md`.
-
----
-
 ## 📚 Recursos
 
 - **Spring Boot Docs:** https://spring.io/projects/spring-boot
