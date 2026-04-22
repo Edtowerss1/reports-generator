@@ -137,8 +137,8 @@ src/main/java/com/example/JaspertReport/
 ### 1. Clonar el repositorio
 
 ```bash
-git clone https://github.com/tuusuario/JaspertReport.git
-cd JaspertReport
+git clone https://github.com/Edtowerss1/reports-generator.git
+cd reports-generator
 ```
 
 ### 2. Configurar variables de entorno
@@ -152,20 +152,19 @@ cp src/main/resources/application.properties.example src/main/resources/applicat
 Edita `src/main/resources/application.properties`:
 
 ```properties
-# Token de autenticación
-SERVICE_TOKEN=tu-token-secreto-aqui
+# Token de autenticación (cambiar en producción)
+service.token=tu-token-secreto-aqui
 
-# Ruta a reportes (debe existir)
-REPORTES_RUTA=/ruta/a/tus/reportes/
+# Ruta a reportes (debe existir y terminar en /)
+app.reportes.ruta=/ruta/a/tus/reportes/
 
 # Base de datos
-DB_URL=jdbc:mysql://localhost:3306/tu_base_datos
-DB_USER=tu_usuario
-DB_PASSWORD=tu_contraseña
-DB_PORT=3306
+spring.datasource.url=jdbc:mysql://localhost:3306/tu_base_datos?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&zeroDateTimeBehavior=CONVERT_TO_NULL
+spring.datasource.username=tu_usuario
+spring.datasource.password=tu_contraseña
 
 # Servidor
-SERVER_PORT=8080
+server.port=8080
 ```
 
 ### 3. Crear la estructura de reportes
@@ -384,7 +383,7 @@ Ver la carpeta `docs/` para más detalles:
 
 Si encuentras un bug:
 
-1. Abre una [Issue](https://github.com/tuusuario/JaspertReport/issues)
+1. Abre una [Issue](https://github.com/Edtowerss1/reports-generator/issues)
 2. Incluye:
    - Versión de Java y Spring Boot
    - Pasos para reproducir
@@ -414,8 +413,8 @@ Ver [CONTRIBUTING.md](CONTRIBUTING.md) para más detalles.
 
 ## 📞 Contacto & Soporte
 
-- **Issues & Bugs**: [GitHub Issues](https://github.com/tuusuario/JaspertReport/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/tuusuario/JaspertReport/discussions)
+- **Issues & Bugs**: [GitHub Issues](https://github.com/Edtowerss1/reports-generator/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/Edtowerss1/reports-generator/discussions)
 
 ---
 
