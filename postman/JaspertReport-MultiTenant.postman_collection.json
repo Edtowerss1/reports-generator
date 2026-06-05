@@ -15,7 +15,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"reportName\": \"SimpleReport\",\n  \"format\": \"PDF\",\n  \"queries\": [\n    {\n      \"param\": \"DS_DATOS\",\n      \"query\": \"SELECT * FROM (VALUES (1, 'Producto Alpha', '$150.00'), (2, 'Servicio Beta', '$230.50'), (3, 'Licencia Gamma', '$89.99'), (4, 'Soporte Delta', '$45.00'), (5, 'Consultoria Epsilon', '$320.00')) AS t(\"id\", \"nombre\", \"valor\")\"\n    }\n  ]\n}"
+          "raw": "{\n  \"reportName\": \"SimpleReport\",\n  \"format\": \"PDF\",\n  \"queries\": [\n    {\n      \"param\": \"DS_DATOS\",\n      \"query\": \"SELECT * FROM (VALUES (1, 'Producto Alpha', '150.00'), (2, 'Servicio Beta', '230.50'), (3, 'Licencia Gamma', '89.99'), (4, 'Soporte Delta', '45.00'), (5, 'Consultoria Epsilon', '320.00')) AS t(\"id\", \"nombre\", \"valor\")\"\n    }\n  ]\n}"
         },
         "url": {
           "raw": "http://localhost:8080/reportes/generar",
@@ -36,7 +36,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"reportName\": \"SimpleReport\",\n  \"format\": \"XLSX\",\n  \"queries\": [\n    {\n      \"param\": \"DS_DATOS\",\n      \"query\": \"SELECT * FROM (VALUES (1, 'Producto Alpha', '$150.00'), (2, 'Servicio Beta', '$230.50'), (3, 'Licencia Gamma', '$89.99')) AS t(\"id\", \"nombre\", \"valor\")\"\n    }\n  ]\n}"
+          "raw": "{\n  \"reportName\": \"SimpleReport\",\n  \"format\": \"XLSX\",\n  \"queries\": [\n    {\n      \"param\": \"DS_DATOS\",\n      \"query\": \"SELECT * FROM (VALUES (1, 'Producto Alpha', '150.00'), (2, 'Servicio Beta', '230.50'), (3, 'Licencia Gamma', '89.99')) AS t(\"id\", \"nombre\", \"valor\")\"\n    }\n  ]\n}"
         },
         "url": {
           "raw": "http://localhost:8080/reportes/generar",
@@ -57,7 +57,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"reportName\": \"SimpleReport\",\n  \"format\": \"HTML\",\n  \"queries\": [\n    {\n      \"param\": \"DS_DATOS\",\n      \"query\": \"SELECT * FROM (VALUES (1, 'Producto Alpha', '$150.00'), (2, 'Servicio Beta', '$230.50')) AS t(\"id\", \"nombre\", \"valor\")\"\n    }\n  ]\n}"
+          "raw": "{\n  \"reportName\": \"SimpleReport\",\n  \"format\": \"HTML\",\n  \"queries\": [\n    {\n      \"param\": \"DS_DATOS\",\n      \"query\": \"SELECT * FROM (VALUES (1, 'Producto Alpha', '150.00'), (2, 'Servicio Beta', '230.50')) AS t(\"id\", \"nombre\", \"valor\")\"\n    }\n  ]\n}"
         },
         "url": {
           "raw": "http://localhost:8080/reportes/generar",
