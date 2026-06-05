@@ -45,22 +45,22 @@ Chain strategy: pending
 
 ## Phase 3: Wiring — Interceptors, Config, Error Handlers
 
-- [ ] 3.1 Create `TokenValidator` — validates header, delegates to TenantResolver
-- [ ] 3.2 Create `TenantContextInitializer` — resolves tenant, enforces dedicated mode, populates TenantContext
-- [ ] 3.3 Create `config/WebConfig.java` — register interceptors on `/reportes/**`
-- [ ] 3.4 Modify `GlobalExceptionHandler` — add handlers for 401/403
-- [ ] 3.5 Unit tests: TokenValidator, TenantContextInitializer (dedicated mode)
-- [ ] 3.6 Integration test: MockMvc interceptor chain for valid/invalid/dedicated-rejection
+- [x] 3.1 Create `TokenValidator` — validates header, delegates to TenantResolver
+- [x] 3.2 Create `TenantContextInitializer` — resolves tenant, enforces dedicated mode, populates TenantContext
+- [x] 3.3 Create `config/WebConfig.java` — register interceptors on `/reportes/**`
+- [x] 3.4 Modify `GlobalExceptionHandler` — add handlers for 401/403 *(completed in Phase 1/2: commit 594f88c)*
+- [x] 3.5 Unit tests: TokenValidator, TenantContextInitializer (dedicated mode)
+- [x] 3.6 Integration test: MockMvc interceptor chain for valid/invalid/dedicated-rejection
 
 ## Phase 4: Service Integration — Wire Interfaces into Existing Services
 
-- [ ] 4.1 Modify `ReportOrchestrator` — inject `ReportAllowlistService`, enforce before fill
-- [ ] 4.2 Unit test: Orchestrator with mocked AllowlistService
-- [ ] 4.3 Modify `JasperFiller` — inject `TemplateResolver`+`ReportCompiler`, remove @PostConstruct compile
-- [ ] 4.4 Unit test: JasperFiller with mocked resolver+compiler
-- [ ] 4.5 Modify `QueryExecutor` — inject `DataSourceProvider` instead of JdbcTemplate
-- [ ] 4.6 Unit test: QueryExecutor with mocked DataSourceProvider
-- [ ] 4.7 Modify `ReportController` — remove inline token check (handled by interceptors)
+- [x] 4.1 Modify `ReportOrchestrator` — inject `ReportAllowlistService`, enforce before fill
+- [x] 4.2 Unit test: Orchestrator with mocked AllowlistService
+- [x] 4.3 Modify `JasperFiller` — inject `TemplateResolver`+`ReportCompiler`, remove @PostConstruct compile
+- [x] 4.4 Unit test: JasperFiller with mocked resolver+compiler
+- [x] 4.5 Modify `QueryExecutor` — inject `DataSourceProvider` instead of JdbcTemplate
+- [x] 4.6 Unit test: QueryExecutor with mocked DataSourceProvider
+- [x] 4.7 Modify `ReportController` — remove inline token check (handled by interceptors)
 
 ## Phase 5: Integration Testing — End-to-End Flow
 

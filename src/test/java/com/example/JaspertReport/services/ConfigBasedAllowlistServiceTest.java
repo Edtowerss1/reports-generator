@@ -70,10 +70,12 @@ class ConfigBasedAllowlistServiceTest {
     }
 
     @Test
-    void shouldBlockAllWhenAllowlistIsNull() {
+    void shouldAllowAllWhenAllowlistIsNull() {
         var service = new ConfigBasedAllowlistService(tenantProperties);
 
-        assertFalse(service.isAllowed("test", "ventas"));
+        // null = not configured → allow all (backward compatibility)
+        assertTrue(service.isAllowed("test", "ventas"));
+        assertTrue(service.isAllowed("test", "any-report"));
     }
 
     @Test

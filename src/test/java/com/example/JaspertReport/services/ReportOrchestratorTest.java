@@ -169,7 +169,7 @@ class ReportOrchestratorTest {
         boolean wasFilled;
 
         StubJasperFiller() {
-            super(null);
+            super(null, null, null);
         }
 
         @Override
