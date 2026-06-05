@@ -1,21 +1,35 @@
 spring.application.name=JaspertReport
 
-# Token de autenticación para el servicio interno PHP→Java
-service.token=YOUR_SECRET_TOKEN
+# ==========================================
+# CONFIGURACIÓN MULTI-TENANT
+# ==========================================
+# Modo de despliegue: centralized (varios tenants en una instancia)
+#                    | dedicated (un solo tenant por instancia)
+app.profile=${APP_PROFILE:centralized}
 
-# Ruta absoluta a la carpeta de reportes (fuera del JAR). Debe terminar en /
-# Windows: app.reportes.ruta=C:/reportes/
-# Linux:   app.reportes.ruta=/opt/reportes/
-app.reportes.ruta=/ruta/a/reportes/
+# Solo para modo dedicated: tenant asignado a esta instancia.
+# Si se recibe un token de otro tenant, se responde con 403.
+app.assigned-tenant=
 
-# Configuración de la base de datos MySQL
-## Conexión directa a la base de datos (sin variables de entorno)
-# Ajusta aquí los parámetros (host, puerto, base de datos, usuario, contraseña):
-spring.datasource.url=jdbc:mysql://HOST:PORT/DATABASE?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&zeroDateTimeBehavior=CONVERT_TO_NULL
-spring.datasource.username=YOUR_USER
-spring.datasource.password=YOUR_PASSWORD
-spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+# Definición de tenants (repetir por cada tenant)
+# El nombre del tenant (ej: acme) es el identificador único.
+app.tenants.acme.service-token=${ACME_TOKEN:dev-token-2026}
+app.tenants.acme.reportes-ruta=${ACME_REPORTS_PATH:/reportes/acme/}
+app.tenants.acme.datasource.url=${ACME_DB_URL:jdbc:mysql://localhost:3306/acme?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&zeroDateTimeBehavior=CONVERT_TO_NULL}
+app.tenants.acme.datasource.username=${ACME_DB_USER:root}
+app.tenants.acme.datasource.password=${ACME_DB_PASSWORD:}
+app.tenants.acme.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+app.tenants.acme.allowed-reports=ventas,stock,clientes
+app.tenants.acme.allowed-formats=PDF,XLSX,DOCX,HTML
 
-# Configuración del pool de conexiones
-spring.datasource.hikari.maximum-pool-size=10
-spring.datasource.hikari.minimum-idle=2
+# ==========================================
+# CONFIGURACIÓN DEL SERVIDOR
+# ==========================================
+server.address=0.0.0.0
+server.port=${SERVER_PORT:8080}
+
+# ==========================================
+# LOGGING
+# ==========================================
+logging.level.root=INFO
+logging.level.com.example.JaspertReport=DEBUG
