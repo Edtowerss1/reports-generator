@@ -36,12 +36,14 @@ public class TenantScopedTemplateResolver implements TemplateResolver {
 
         // Ensure trailing slash for clean path construction
         String normalizedRuta = ruta.endsWith("/") ? ruta : ruta + "/";
-        Path jasperPath = Path.of(normalizedRuta + reportName + ".jasper");
+        Path jasperPath = Path.of(normalizedRuta + reportName + ".jasper").toAbsolutePath().normalize();
+        Path jrxmlPath = Path.of(normalizedRuta + reportName + ".jrxml");
 
-        if (!Files.exists(jasperPath)) {
+        // Support lazy compilation: template exists if either .jasper or .jrxml is present
+        if (!Files.exists(jasperPath) && !Files.exists(jrxmlPath)) {
             throw new ReportNotFoundException(reportName);
         }
 
-        return jasperPath.toAbsolutePath().normalize();
+        return jasperPath;
     }
 }
