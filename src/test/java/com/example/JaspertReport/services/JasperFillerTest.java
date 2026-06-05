@@ -145,6 +145,38 @@ class JasperFillerTest {
     }
 
     @Test
+    void shouldSetSubreportDirToTenantRuta(@TempDir Path tempDir) throws Exception {
+        // T2: SUBREPORT_DIR must be scoped to the tenant's reportesRuta
+        TenantContext.set(acmeTenant);
+
+        Path jasperPath = tempDir.resolve("ventas.jasper");
+        Files.createFile(jasperPath);
+
+        when(templateResolver.resolve("acme", "ventas")).thenReturn(jasperPath.toAbsolutePath());
+        Path jrxmlPath = jasperPath.resolveSibling("ventas.jrxml");
+        when(reportCompiler.compileIfNeeded(jrxmlPath)).thenReturn(jasperPath.toAbsolutePath());
+        stubQueryTemplate();
+
+        var queries = List.of(createQuery("q1", "SELECT 1"));
+
+        try (MockedStatic<JasperFillManager> jfm = mockStatic(JasperFillManager.class)) {
+            final Map<String, Object>[] capturedParams = new Map[]{null};
+            jfm.when(() -> JasperFillManager.fillReport(
+                    any(InputStream.class), anyMap(), any(JRDataSource.class)))
+                .thenAnswer(invocation -> {
+                    capturedParams[0] = invocation.getArgument(1);
+                    throw new RuntimeException("expected short-circuit");
+                });
+
+            assertThrows(ReportGenerationException.class,
+                () -> jasperFiller.fill("ventas", queries));
+
+            assertNotNull(capturedParams[0], "params map must not be null");
+            assertEquals("/reportes/acme/", capturedParams[0].get("SUBREPORT_DIR"));
+        }
+    }
+
+    @Test
     void shouldThrowWhenNoTenantInContext() {
         var queries = List.of(createQuery("q1", "SELECT 1"));
 

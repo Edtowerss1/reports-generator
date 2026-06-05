@@ -94,6 +94,27 @@ class QueryExecutorTest {
     }
 
     @Test
+    void shouldNotAccessOtherTenantDatasource() {
+        // D3: Cross-tenant isolation — query for acme must not reach corp's datasource
+        TenantContext.set(acmeTenant);
+        String sql = "SELECT * FROM reports";
+        JdbcTemplate testTemplate = new JdbcTemplate() {
+            @Override
+            public List<Map<String, Object>> queryForList(String sqlToExecute) {
+                return List.of();
+            }
+        };
+
+        when(dataSourceProvider.getTemplate("acme")).thenReturn(testTemplate);
+
+        queryExecutor.execute(sql, null);
+
+        verify(dataSourceProvider).getTemplate("acme");
+        verify(dataSourceProvider, never()).getTemplate("corp");
+        verifyNoMoreInteractions(dataSourceProvider);
+    }
+
+    @Test
     void shouldRejectNullSql() {
         assertThrows(NullPointerException.class,
             () -> queryExecutor.execute(null, "ignored"));

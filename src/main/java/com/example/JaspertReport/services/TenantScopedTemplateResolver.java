@@ -2,6 +2,7 @@ package com.example.JaspertReport.services;
 
 import com.example.JaspertReport.config.TenantProperties;
 import com.example.JaspertReport.exceptions.ReportNotFoundException;
+import org.springframework.stereotype.Component;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
  * and validates the file exists. No fallback to a shared directory —
  * each tenant has isolated templates (spec T1, T3).
  */
+@Component
 public class TenantScopedTemplateResolver implements TemplateResolver {
 
     private final Map<String, String> tenantIdToRuta;

@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -116,8 +117,8 @@ class MultiTenantE2ETest {
                         .content(jsonBody("ventas", "PDF")))
                 .andExpect(status().isOk());
 
-        assert TenantContext.getCurrentTenant() == null
-                : "TenantContext must be cleared after request completes";
+        assertNull(TenantContext.getCurrentTenant(),
+                "TenantContext must be cleared after request completes");
     }
 
     // ========================================================================
@@ -269,6 +270,37 @@ class MultiTenantE2ETest {
                         .content(jsonBody("reporte1", "PDF")))
                 .andExpect(status().isOk())
                 .andExpect(content().bytes(new byte[]{0x0B}));
+    }
+
+    @Test
+    @DisplayName("F3: Full flow cross-tenant isolation — each tenant gets own data")
+    void e2eIsolation_acmeAndCorpGetOwnData() throws Exception {
+        // Both tenants registered simultaneously
+        resolver.setMapping("tok-A", ACME_TENANT);
+        resolver.setMapping("tok-B", CORP_TENANT);
+        buildMockMvc(centralizedConfig);
+
+        // Acme request returns acme data
+        byte[] acmeData = new byte[]{0x41, 0x43, 0x4D, 0x45}; // "ACME"
+        orchestrator.setResult(new ReportResult(acmeData, "application/pdf", "pdf"));
+
+        mockMvc.perform(post("/reportes/generar")
+                        .header("X-Service-Token", "tok-A")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonBody("ventas", "PDF")))
+                .andExpect(status().isOk())
+                .andExpect(content().bytes(acmeData));
+
+        // Corp request returns corp data (not acme's)
+        byte[] corpData = new byte[]{0x43, 0x4F, 0x52, 0x50}; // "CORP"
+        orchestrator.setResult(new ReportResult(corpData, "application/pdf", "pdf"));
+
+        mockMvc.perform(post("/reportes/generar")
+                        .header("X-Service-Token", "tok-B")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonBody("reporte1", "PDF")))
+                .andExpect(status().isOk())
+                .andExpect(content().bytes(corpData));
     }
 
     // ========================================================================

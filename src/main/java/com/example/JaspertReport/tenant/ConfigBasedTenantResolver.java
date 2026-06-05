@@ -2,6 +2,7 @@ package com.example.JaspertReport.tenant;
 
 import com.example.JaspertReport.config.TenantProperties;
 import com.example.JaspertReport.exceptions.TenantResolutionException;
+import org.springframework.stereotype.Component;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -14,6 +15,7 @@ import java.util.Set;
  * Throws {@link TenantResolutionException} for unknown or null tokens, matching
  * spec requirement R2 (unknown token → HTTP 401) and R3 (missing token → HTTP 401).
  */
+@Component
 public class ConfigBasedTenantResolver implements TenantResolver {
 
     private final Map<String, Tenant> tokenToTenant = new LinkedHashMap<>();

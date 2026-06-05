@@ -3,6 +3,7 @@ package com.example.JaspertReport.tenant;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 /**
@@ -15,6 +16,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
  * Must be registered before {@link TenantContextInitializer} in the interceptor chain.
  */
 @Slf4j
+@Component
 public class TokenValidator implements HandlerInterceptor {
 
     private static final String TOKEN_HEADER = "X-Service-Token";
@@ -36,7 +38,7 @@ public class TokenValidator implements HandlerInterceptor {
         }
 
         if (!tenantResolver.validate(token)) {
-            log.warn("Unknown service token: {}", token);
+            log.warn("Invalid service token received");
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unknown or invalid service token");
             return false;
         }

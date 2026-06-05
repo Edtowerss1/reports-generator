@@ -4,6 +4,7 @@ import com.example.JaspertReport.config.TenantProperties;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 /**
@@ -18,6 +19,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
  * preventing ThreadLocal leaks in pooled environments.
  */
 @Slf4j
+@Component
 public class TenantContextInitializer implements HandlerInterceptor {
 
     private static final String TOKEN_HEADER = "X-Service-Token";

@@ -3,6 +3,7 @@ package com.example.JaspertReport.services;
 import com.example.JaspertReport.exceptions.ReportGenerationException;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jasperreports.engine.JasperCompileManager;
+import org.springframework.stereotype.Component;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,6 +17,7 @@ import java.nio.file.Path;
  * avoiding startup contention with N tenants (design decision #4).
  */
 @Slf4j
+@Component
 public class LazyReportCompiler implements ReportCompiler {
 
     @Override

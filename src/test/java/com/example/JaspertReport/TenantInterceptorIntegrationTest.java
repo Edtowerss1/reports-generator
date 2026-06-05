@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -165,8 +166,8 @@ class TenantInterceptorIntegrationTest {
                 .andExpect(status().isOk());
 
         // After the request, TenantContext should be cleared (afterCompletion)
-        assert TenantContext.getCurrentTenant() == null
-                : "TenantContext should be cleared after request";
+        assertNull(TenantContext.getCurrentTenant(),
+                "TenantContext should be cleared after request");
     }
 
     @RestController

@@ -93,4 +93,28 @@ class DataSourceManagerTest {
         // In that case, getConnection() throws NPE which becomes RuntimeException.
         assertThrows(RuntimeException.class, manager::validateDataSources);
     }
+
+    @Test
+    void shouldFailFastOnInvalidJdbcUrl() {
+        // D2: Startup fails on bad config — validate that DataSourceManager
+        // throws when constructed with an invalid JDBC URL.
+        var badConfig = new TenantProperties();
+        var tenant = new TenantProperties.Tenant();
+        tenant.setServiceToken("tok-bad");
+        tenant.setReportesRuta("/tmp/");
+        var ds = new TenantProperties.Datasource();
+        ds.setUrl("jdbc:mysql://192.0.2.1:1/invalid_db");
+        ds.setUsername("user");
+        ds.setPassword("pass");
+        ds.setDriverClassName("com.mysql.cj.jdbc.Driver");
+        tenant.setDatasource(ds);
+        badConfig.setTenants(Map.of("bad", tenant));
+        badConfig.setProfile("centralized");
+
+        // Either the constructor fails (HikariCP fast-fail) or validateDataSources does
+        assertThrows(RuntimeException.class, () -> {
+            var manager = new DataSourceManager(badConfig);
+            manager.validateDataSources();
+        });
+    }
 }

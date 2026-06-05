@@ -6,6 +6,8 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
@@ -25,6 +27,7 @@ import java.util.Map;
  * abstraction, never on HikariCP directly (DIP).
  */
 @Slf4j
+@Component
 public class DataSourceManager implements DataSourceProvider {
 
     private final Map<String, JdbcTemplate> templates = new HashMap<>();
@@ -34,6 +37,7 @@ public class DataSourceManager implements DataSourceProvider {
      *
      * @param tenantProperties the tenant configuration
      */
+    @Autowired
     public DataSourceManager(TenantProperties tenantProperties) {
         for (var entry : tenantProperties.getTenants().entrySet()) {
             String tenantId = entry.getKey();

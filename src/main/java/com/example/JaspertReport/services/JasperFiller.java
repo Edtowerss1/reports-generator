@@ -85,7 +85,7 @@ public class JasperFiller {
             } catch (Exception e) {
                 String datasource = q.getDatasource() == null ? "default" : q.getDatasource();
                 String message = "Error ejecutando query para param '" + q.getParam() + "'";
-                log.error("{} (datasource={}). SQL: {}", message, datasource, q.getQuery(), e);
+                log.error("{} (datasource={})", message, datasource, e);
                 throw new ReportGenerationException(message, e);
             }
         }

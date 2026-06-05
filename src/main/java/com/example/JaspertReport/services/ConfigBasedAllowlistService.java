@@ -1,6 +1,7 @@
 package com.example.JaspertReport.services;
 
 import com.example.JaspertReport.config.TenantProperties;
+import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
  *   <li>Non-empty list → check membership (spec A1, A2)</li>
  * </ul>
  */
+@Component
 public class ConfigBasedAllowlistService implements ReportAllowlistService {
 
     /**
