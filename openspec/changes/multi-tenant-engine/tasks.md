@@ -26,14 +26,14 @@ Chain strategy: pending
 
 ## Phase 1: Foundation — Model, Context, Exceptions, Config
 
-- [ ] 1.1 Create `tenant/Tenant.java` — value record with id, reportesRuta, allowedReports, allowedFormats, datasource
-- [ ] 1.2 Create `tenant/TenantContext.java` — ThreadLocal holder
-- [ ] 1.3 Create `exceptions/TenantResolutionException.java` → 401
-- [ ] 1.4 Create `exceptions/ReportNotAllowedException.java` → 403
-- [ ] 1.5 Create `config/TenantProperties.java` — `@ConfigurationProperties("app")`
-- [ ] 1.6 Unit tests: TenantContext isolation, TenantProperties binding
-- [ ] 1.7 Update `application.properties` — replace single-tenant props with `app.tenants.*`
-- [ ] 1.8 Update `application.properties.example`
+- [x] 1.1 Create `tenant/Tenant.java` — value record with id, reportesRuta, allowedReports, allowedFormats, datasource
+- [x] 1.2 Create `tenant/TenantContext.java` — ThreadLocal holder
+- [x] 1.3 Create `exceptions/TenantResolutionException.java` → 401
+- [x] 1.4 Create `exceptions/ReportNotAllowedException.java` → 403
+- [x] 1.5 Create `config/TenantProperties.java` — `@ConfigurationProperties("app")`
+- [x] 1.6 Unit tests: TenantContext isolation, TenantProperties binding
+- [x] 1.7 Update `application.properties` — added `app.profile`, `app.assigned-tenant` alongside existing single-tenant props (full removal in Phase 4)
+- [x] 1.8 Update `application.properties.example`
 
 ## Phase 2: Core Abstractions — Interfaces + Implementations
 
