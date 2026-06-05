@@ -1,250 +1,194 @@
-# Deployment Guide - JaspertReport
+# Deployment Guide — JaspertReport
 
-Esta guía te ayudará a instalar y ejecutar JaspertReport en tu máquina.
-
-## 📋 Requisitos Previos
-
-Elige el método de instalación según tu caso:
+Guía para desplegar el motor de reportes multi-tenant en producción.
 
 ---
 
-## 🚀 Opción 1: Ejecutable Portable Windows (Más Fácil)
+## 📋 Requisitos
 
-### Requisitos
-- **Windows 10+** (64-bit)
-- **512 MB RAM** disponible
-- **~200 MB espacio en disco**
-- **Acceso a MySQL** (BD remota o local)
-
-### Pasos
-
-1. **Descarga el ejecutable portable:**
-   - Busca en Releases: `JaspertReport-portable-vX.X.X.zip`
-   - O construye uno tu mismo (ver sección "Construir Ejecutable Portable")
-
-2. **Descomprimir:**
-   ```
-   Descomprime JaspertReport-portable-vX.X.X.zip en una carpeta
-   ```
-
-3. **Configurar credenciales:**
-   ```
-   Abre: JaspertReport-portable-vX.X.X/
-   ├── app/
-   │   ├── application.properties  ← EDITA ESTE ARCHIVO
-   │   └── reportes/              ← Copia tus plantillas JRXML aquí
-   ```
-
-   Edita `application.properties`:
-   ```properties
-   SERVICE_TOKEN=tu-token-secreto
-   DB_URL=jdbc:mysql://tu-host:3306/tu-base-datos
-   DB_USER=tu-usuario
-   DB_PASSWORD=tu-contraseña
-   SERVER_PORT=8080
-   REPORTES_RUTA=./reportes/
-   ```
-
-4. **Ejecutar:**
-   - Doble clic en `JaspertReport.exe`
-   - O desde PowerShell:
-     ```powershell
-     .\JaspertReport.exe
-     ```
-
-5. **Acceder:**
-   ```
-   http://localhost:8080/reportes/generar
-   ```
-
-### ✅ Ventajas
-- ✅ NO requiere instalar Java
-- ✅ Totalmente portable (USB, carpeta local, etc.)
-- ✅ NO modifica el registro de Windows
-- ✅ Fácil desinstalar (solo elimina carpeta)
-
-### ⚠️ Notas
-- Si el antivirus marca el `.exe` como sospechoso, es normal (Java empaquetado)
-- Agrégalo a excepciones del antivirus si es necesario
-- Requiere acceso a la BD especificada en `application.properties`
+- **Java 17+**
+- **MySQL 8.0+** (una base de datos por tenant)
+- **512 MB RAM** mínimo por instancia
+- Puerto disponible (default: `8080`)
 
 ---
 
-## 💻 Opción 2: JAR Ejecutable (Más Control)
+## 🚀 Quick Deploy — JAR
 
-### Requisitos
-- **Java 17+** instalado
-- **512 MB RAM** disponible
-- **~100 MB espacio en disco** (sin runtime)
-- **Acceso a MySQL**
+### 1. Construir el JAR
 
-### Pasos
+```bash
+./mvnw clean package -DskipTests
+```
 
-1. **Descarga el JAR:**
-   - Busca en Releases: `JaspertReport-vX.X.X.jar`
-   - O construye uno (ver "Development Guide")
+El JAR se genera en `target/JaspertReport-0.0.1-SNAPSHOT.jar`.
 
-2. **Crea carpeta de trabajo:**
-   ```bash
-   mkdir JaspertReport
-   cd JaspertReport
-   ```
+### 2. Crear estructura de despliegue
 
-3. **Descarga configuración de ejemplo:**
-   ```bash
-   # Descarga desde: https://github.com/tuusuario/JaspertReport/blob/main/src/main/resources/application.properties.example
-   curl -o application.properties https://raw.githubusercontent.com/tuusuario/JaspertReport/main/src/main/resources/application.properties.example
-   ```
+```bash
+mkdir -p /opt/jaspertreport/reportes/{default,acme,corp}
+```
 
-4. **Edita credenciales:**
-   ```bash
-   nano application.properties
-   # O abre con tu editor favorito
-   ```
+### 3. Configurar `application.properties`
 
-5. **Crea carpeta de reportes:**
-   ```bash
-   mkdir reportes
-   # Copia tus archivos .jrxml aquí
-   ```
+```properties
+# Modo de despliegue
+app.profile=centralized
 
-6. **Ejecuta:**
-   ```bash
-   java -jar JaspertReport-vX.X.X.jar
-   ```
+# Tenant default
+app.tenants.default.service-token=${DEFAULT_TOKEN}
+app.tenants.default.reportes-ruta=/opt/jaspertreport/reportes/default/
+app.tenants.default.datasource.url=jdbc:mysql://db-host:3306/db_default?useSSL=false&serverTimezone=UTC
+app.tenants.default.datasource.username=${DEFAULT_DB_USER}
+app.tenants.default.datasource.password=${DEFAULT_DB_PASS}
+app.tenants.default.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+app.tenants.default.allowed-reports=MasterReport,DetailReport,SimpleReport
+app.tenants.default.allowed-formats=PDF,XLSX,DOCX,HTML
 
-7. **Accede:**
-   ```
-   http://localhost:8080/reportes/generar
-   ```
+# Tenant acme
+app.tenants.acme.service-token=${ACME_TOKEN}
+app.tenants.acme.reportes-ruta=/opt/jaspertreport/reportes/acme/
+app.tenants.acme.datasource.url=jdbc:mysql://db-host:3306/db_acme?useSSL=false&serverTimezone=UTC
+app.tenants.acme.datasource.username=${ACME_DB_USER}
+app.tenants.acme.datasource.password=${ACME_DB_PASS}
+app.tenants.acme.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+app.tenants.acme.allowed-reports=ReporteVentas,StickerQR
+
+server.port=8080
+```
+
+### 4. Ejecutar
+
+```bash
+java -jar JaspertReport-0.0.1-SNAPSHOT.jar
+```
+
+---
+
+## 🗂️ Modo Dedicado
+
+Para tenants que requieran instancia propia (aislamiento físico, alta carga, requisitos contractuales):
+
+```properties
+app.profile=dedicated
+app.assigned-tenant=acme
+
+app.tenants.acme.service-token=${ACME_TOKEN}
+app.tenants.acme.reportes-ruta=/opt/jaspertreport/reportes/acme/
+app.tenants.acme.datasource.url=jdbc:mysql://db-acme:3306/db_acme
+# ...
+```
+
+La instancia dedicada **rechaza tokens de otros tenants** con HTTP 403.  
+El mismo JAR funciona en ambos modos — solo cambia la configuración.
+
+---
+
+## 🔐 Seguridad
+
+### Tokens por tenant
+
+Cada tenant tiene su propio token. Usá variables de entorno, nunca hardcodees:
+
+```bash
+export DEFAULT_TOKEN="tok-seguro-default-2026"
+export ACME_TOKEN="tok-seguro-acme-2026"
+```
+
+Configurá `application.properties` con placeholders:
+```properties
+app.tenants.default.service-token=${DEFAULT_TOKEN}
+```
+
+### SSL/HTTPS
+
+```properties
+server.ssl.key-store=/ruta/a/keystore.jks
+server.ssl.key-store-password=${KEYSTORE_PASS}
+server.ssl.key-store-type=JKS
+server.port=8443
+```
+
+### Firewall
+
+- Abrí solo el puerto de la aplicación para IPs autorizadas
+- Las bases de datos de tenants deben ser accesibles solo desde la instancia del motor
+
+---
+
+## 📊 Pool de Conexiones
+
+Cada tenant tiene su propio pool HikariCP. El sizing depende de la carga esperada por tenant.
+
+Para ajustar el pool por tenant, usá propiedades adicionales en el `DataSourceManager` o externalizá la configuración vía `application.properties`:
+
+```properties
+# Ejemplo (requiere soporte en DataSourceManager)
+app.tenants.acme.datasource.hikari.maximum-pool-size=10
+app.tenants.acme.datasource.hikari.minimum-idle=2
+```
 
 ---
 
 ## 🔧 Solución de Problemas
 
-### Error: "BD no disponible"
-```
-Solución: Verifica que la BD está corriendo y los parámetros en application.properties son correctos
-```
+### "Failed to initialize pool: Communications link failure"
 
-### Error: "Puerto 8080 en uso"
-```
-Opción 1: Termina el proceso que usa el puerto
-Opción 2: Cambia SERVER_PORT en application.properties
-   SERVER_PORT=8081
-```
+La base de datos del tenant no es alcanzable. Verificá:
+- URL, usuario y contraseña en la config del tenant
+- Que la BD esté corriendo y accesible desde la instancia
 
-### Error: "Reportes no encontrados"
-```
-Asegúrate que:
-1. La carpeta de reportes existe
-2. Los archivos .jrxml están ahí
-3. REPORTES_RUTA en application.properties apunta al lugar correcto
-```
+### "Unknown or invalid service token" (401)
 
-### JasperReport.exe se cierra sin error
-```
-Solución: Ejecuta desde PowerShell para ver el error:
-   .\JaspertReport.exe
-```
+El token no coincide con ningún tenant configurado.
 
-### "Token inválido" en peticiones
-```
-Verifica que el header sea exacto:
-   X-Service-Token: tu-token-secreto
-```
+### "Reporte no permitido para tenant" (403)
 
----
+El reporte solicitado no está en el `allowed-reports` del tenant.
 
-## 📊 Estructura de Archivos (Portable)
+### "Template not found" (404)
 
-```
-JaspertReport-portable-vX.X.X/
-├── JaspertReport.exe          ← Ejecutable
-├── runtime/                   ← Java Runtime (no modificar)
-├── app/
-│   ├── application.properties ← EDITAR: credenciales
-│   ├── application.yml
-│   ├── JaspertReport-vX.jar   ← Aplicación
-│   └── reportes/              ← COPIA AQUÍ: plantillas .jrxml
-├── README.txt
-└── JaspertReport.ico
-```
+El `.jrxml`/.`jasper` no existe en la carpeta `reportes-ruta` del tenant.  
+Recordá: **no hay fallback a carpeta compartida**.
 
----
+### Puerto en uso
 
-## 🎨 Personalización
-
-### Cambiar Puerto
-En `application.properties`:
-```properties
-SERVER_PORT=9090
-```
-Luego accede en `http://localhost:9090`
-
-### Cambiar Ruta de Reportes
-En `application.properties`:
-```properties
-# Windows
-REPORTES_RUTA=C:/Mis Reportes/
-
-# Linux/Mac
-REPORTES_RUTA=/opt/reportes/
-```
-
-### Cambiar Token
-En `application.properties`:
-```properties
-SERVICE_TOKEN=mi-token-ultra-secreto-12345
+```bash
+java -jar JaspertReport.jar --server.port=8081
 ```
 
 ---
 
 ## 📝 Logs
 
-### Ver logs en tiempo real (JAR)
 ```bash
-java -jar JaspertReport-vX.X.X.jar --logging.level.root=DEBUG
-```
+# DEBUG en runtime
+java -jar JaspertReport.jar --logging.level.com.example.JaspertReport=DEBUG
 
-### Logs en archivo
-```properties
-# En application.properties
+# Logs a archivo (en application.properties)
 logging.file.name=logs/jaspertreport.log
 logging.file.max-size=10MB
-logging.file.max-history=10
 ```
+
+Los logs incluyen `tenantId` para trazabilidad. **Nunca** se loguean credenciales ni tokens completos.
 
 ---
 
-## 🔒 Seguridad en Producción
+## 🏗️ Estructura de Despliegue
 
-### Cambiar token por defecto
-⚠️ **CRÍTICO:** No uses `dev-token` en producción
-```properties
-SERVICE_TOKEN=generar-token-fuerte-aqui
 ```
-
-### SSL/HTTPS
-Para usar HTTPS, necesitarás un certificado:
-```properties
-server.ssl.key-store=/ruta/a/keystore.jks
-server.ssl.key-store-password=contraseña
-server.ssl.key-store-type=JKS
+/opt/jaspertreport/
+├── JaspertReport.jar
+├── application.properties
+├── reportes/
+│   ├── default/
+│   │   ├── SimpleReport.jrxml
+│   │   ├── MasterReport.jrxml
+│   │   └── DetailReport.jrxml
+│   ├── acme/
+│   │   └── ReporteVentas.jrxml
+│   └── corp/
+│       └── ReporteCartera.jrxml
+└── logs/
+    └── jaspertreport.log
 ```
-
-### Firewall
-- Abre puerto 8080 (o el que configuraste) solo para IPs autorizadas
-- Restringe acceso a la BD a solo la app
-
-### Backups
-- Respalda regularmente la carpeta `reportes/`
-- Respalda la BD (MySQL)
-
----
-
-## 📞 Soporte
-
-- **Documentación:** Ver `README.md` en el repositorio
-- **Issues:** https://github.com/tuusuario/JaspertReport/issues
-- **API Docs:** Ver `README.md` (sección de API REST)
