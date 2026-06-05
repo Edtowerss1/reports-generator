@@ -1,75 +1,39 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- Example: Simple single-datasource report for JaspertReport multi-tenant engine -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
-              name="SimpleReport" language="java"
-              pageWidth="595" pageHeight="842"
-              columnWidth="555" leftMargin="20" rightMargin="20"
-              topMargin="20" bottomMargin="20"
-              uuid="a1b2c3d4-e5f6-7890-abcd-ef1234567890">
-
+<!-- Example template for JaspertReport multi-tenant engine -->
+<jasperReport name="SimpleReport" language="java" columnCount="1" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="a1b2c3d4-e5f6-7890-abcd-ef1234567890">
     <property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
-
-    <parameter name="DS_DATOS" forPrompting="false"
-               class="net.sf.jasperreports.engine.JRDataSource"/>
-
+    <parameter name="DS_DATOS" forPrompting="false" class="net.sf.jasperreports.engine.JRDataSource"/>
     <query language="sql"><![CDATA[]]></query>
-
     <field name="id"     class="java.lang.String"/>
     <field name="nombre" class="java.lang.String"/>
     <field name="valor"  class="java.lang.String"/>
-
-    <title>
-        <band height="50">
-            <element kind="staticText" uuid="t1-uuid" x="0" y="10" width="555" height="30">
-                <textElement textAlignment="Center">
-                    <font fontName="Arial" size="16" isBold="true"/>
-                </textElement>
-                <text><![CDATA[Sample Report — SimpleReport]]></text>
-            </element>
-        </band>
+    <title height="30">
+        <element kind="staticText" uuid="a1b2c3d4-0001-4000-8000-000000000001" x="0" y="5" width="555" height="20" fontName="Arial" fontSize="14.0" bold="true" hTextAlign="Center">
+            <text><![CDATA[Sample Report — SimpleReport]]></text>
+        </element>
     </title>
-
-    <columnHeader>
-        <band height="25">
-            <element kind="staticText" uuid="h1-uuid" x="0"   y="5" width="50"  height="15">
-                <textElement><font fontName="Arial" size="10" isBold="true"/></textElement>
-                <text><![CDATA[ID]]></text>
-            </element>
-            <element kind="staticText" uuid="h2-uuid" x="60"  y="5" width="250" height="15">
-                <textElement><font fontName="Arial" size="10" isBold="true"/></textElement>
-                <text><![CDATA[Name]]></text>
-            </element>
-            <element kind="staticText" uuid="h3-uuid" x="320" y="5" width="235" height="15">
-                <textElement><font fontName="Arial" size="10" isBold="true"/></textElement>
-                <text><![CDATA[Value]]></text>
-            </element>
-            <element kind="line" uuid="hl-uuid" x="0" y="23" width="555" height="1"/>
-        </band>
+    <columnHeader height="20">
+        <element kind="staticText" uuid="a1b2c3d4-0002-4000-8000-000000000002" x="0"   y="2" width="50"  height="16" fontName="Arial" fontSize="10.0" bold="true">
+            <text><![CDATA[ID]]></text>
+        </element>
+        <element kind="staticText" uuid="a1b2c3d4-0003-4000-8000-000000000003" x="60"  y="2" width="250" height="16" fontName="Arial" fontSize="10.0" bold="true">
+            <text><![CDATA[Name]]></text>
+        </element>
+        <element kind="staticText" uuid="a1b2c3d4-0004-4000-8000-000000000004" x="320" y="2" width="235" height="16" fontName="Arial" fontSize="10.0" bold="true">
+            <text><![CDATA[Value]]></text>
+        </element>
+        <element kind="line" uuid="a1b2c3d4-0005-4000-8000-000000000005" x="0" y="18" width="555" height="1"/>
     </columnHeader>
-
     <detail>
         <band height="20">
-            <element kind="textField" uuid="d1-uuid" x="0"   y="2" width="50"  height="16">
-                <textFieldExpression><![CDATA[$F{id}]]></textFieldExpression>
+            <element kind="textField" uuid="a1b2c3d4-0006-4000-8000-000000000006" x="0"   y="2" width="50"  height="16" fontName="Arial" fontSize="10.0">
+                <expression><![CDATA[$F{id}]]></expression>
             </element>
-            <element kind="textField" uuid="d2-uuid" x="60"  y="2" width="250" height="16">
-                <textFieldExpression><![CDATA[$F{nombre}]]></textFieldExpression>
+            <element kind="textField" uuid="a1b2c3d4-0007-4000-8000-000000000007" x="60"  y="2" width="250" height="16" fontName="Arial" fontSize="10.0">
+                <expression><![CDATA[$F{nombre}]]></expression>
             </element>
-            <element kind="textField" uuid="d3-uuid" x="320" y="2" width="235" height="16">
-                <textFieldExpression><![CDATA[$F{valor}]]></textFieldExpression>
+            <element kind="textField" uuid="a1b2c3d4-0008-4000-8000-000000000008" x="320" y="2" width="235" height="16" fontName="Arial" fontSize="10.0">
+                <expression><![CDATA[$F{valor}]]></expression>
             </element>
         </band>
     </detail>
-
-    <pageFooter>
-        <band height="20">
-            <element kind="textField" uuid="pf-uuid" x="455" y="2" width="100" height="16">
-                <textElement textAlignment="Right">
-                    <font fontName="Arial" size="8"/>
-                </textElement>
-                <textFieldExpression><![CDATA["Page " + $V{PAGE_NUMBER}]]></textFieldExpression>
-            </element>
-        </band>
-    </pageFooter>
-
 </jasperReport>
