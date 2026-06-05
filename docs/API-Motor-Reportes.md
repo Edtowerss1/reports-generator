@@ -86,7 +86,7 @@ src/main/java/com/example/JaspertReport/
 
 
 src/main/resources/
-├── application.properties               ← Configuración (BD, token, rutas)
+├── application.properties               ← Configuración multi-tenant (tenants, tokens, rutas, BD)
 ├── jasperreports_extension.properties   ← Registro de fuentes personalizadas
 ├── fonts/
 │   ├── fonts.xml                        ← Definición de familia Arial
@@ -423,14 +423,15 @@ Spring detecta la clase por `@Component`, el `ExporterRegistry` la registra auto
 
 **1.** Diseñar la plantilla `.jrxml` con Jaspersoft Studio u otro editor
 
-**2.** Colocar el archivo `.jrxml` en la carpeta configurada en `app.reportes.ruta`
+**2.** Colocar el archivo `.jrxml` en la carpeta del tenant configurada en `app.tenants.<id>.reportes-ruta`
 
-**3.** Al iniciar la API, el `.jrxml` se compila a `.jasper` automáticamente
+**3.** La API compila el `.jrxml` a `.jasper` automáticamente en el primer request (compilación lazy)
 
 **4.** Desde el cliente, enviar la petición con:
 
 - `"reportName"`: el nombre del archivo sin extensión
 - `"queries"`: las queries cuyos `param` coincidan con los `<parameter>` del `.jrxml`
+- Header `X-Service-Token`: el token asignado al tenant
 
 **No se modifica ningún archivo Java.**
 
@@ -440,25 +441,35 @@ Spring detecta la clase por `@Component`, el `ExporterRegistry` la registra auto
 
 Archivo: `src/main/resources/application.properties`
 
+### Modo de despliegue
+
+| Propiedad       | Descripción                                               | Ejemplo          |
+| --------------- | --------------------------------------------------------- | ---------------- |
+| `app.profile`   | `centralized` (multi-tenant) o `dedicated` (una instancia por cliente) | `centralized` |
+| `app.assigned-tenant` | Solo en modo `dedicated`: ID del tenant asignado     | `cliente_a`      |
+
+### Configuración por tenant
+
 | Propiedad                                      | Descripción                              | Ejemplo                                |
 | ---------------------------------------------- | ---------------------------------------- | -------------------------------------- |
-| `service.token`                                | Token de autenticación del servicio      | `your-service-token-2026`              |
-| `app.reportes.ruta`                            | Ruta a la carpeta de plantillas `.jrxml` | `C:/reportes/` (debe terminar en /)    |
-| `spring.datasource.url`                        | JDBC URL de base de datos de la instancia | `jdbc:mysql://your-db-host:3306/your_db` |
-| `spring.datasource.username`                   | Usuario de base de datos                 | `your_username`                        |
-| `spring.datasource.password`                   | Contraseña de base de datos              | `***`                                  |
-| `spring.datasource.*.hikari.maximum-pool-size` | Máximo de conexiones simultáneas         | `10`                                   |
-| `spring.datasource.*.hikari.minimum-idle`      | Conexiones mínimas abiertas              | `2`                                    |
+| `app.tenants.<id>.service-token`               | Token de servicio para este tenant       | `tok-abc123`                           |
+| `app.tenants.<id>.reportes-ruta`               | Ruta a plantillas `.jrxml` del tenant    | `/reportes/cliente_a/`                 |
+| `app.tenants.<id>.datasource.url`              | JDBC URL de la BD del tenant             | `jdbc:mysql://host:3306/db_cliente_a`  |
+| `app.tenants.<id>.datasource.username`         | Usuario de base de datos                 | `usuario`                              |
+| `app.tenants.<id>.datasource.password`         | Contraseña de base de datos              | `***`                                  |
+| `app.tenants.<id>.datasource.driver-class-name`| Driver JDBC                              | `com.mysql.cj.jdbc.Driver`             |
+| `app.tenants.<id>.allowed-reports`             | Lista de reportes permitidos (vacío = bloquear todos, ausente = permitir todos) | `ventas,stock` |
+| `app.tenants.<id>.allowed-formats`             | Formatos permitidos (vacío = todos)      | `PDF,XLSX`                             |
 
 ### Auto-compilación de plantillas
 
-Al arrancar, `JasperFiller` revisa la carpeta `app.reportes.ruta`:
+Al recibir un request, `LazyReportCompiler` revisa la carpeta del tenant:
 
 - Si un `.jrxml` no tiene su `.jasper` correspondiente → lo compila
 - Si un `.jrxml` es más reciente que su `.jasper` → lo recompila
 - Si el `.jasper` está al día → no hace nada
 
-Esto permite actualizar plantillas sin reiniciar la API manualmente (basta con reiniciar el servicio).
+Esto permite actualizar plantillas sin reiniciar la API.
 
 ---
 
@@ -579,11 +590,11 @@ En Postman, cambiar la vista a **Preview** para ver el PDF renderizado directame
 
 ### "Modifiqué un .jrxml pero no veo los cambios"
 
-Reinicia la API. Al arrancar, `JasperFiller` detecta que el `.jrxml` es más reciente que el `.jasper` y lo recompila automáticamente.
+La API recompila automáticamente al detectar que el `.jrxml` es más reciente que el `.jasper` en el siguiente request. No es necesario reiniciar.
 
-### "Quiero cambiar la base de datos"
+### "Quiero cambiar la base de datos de un tenant"
 
-Edita `spring.datasource.url`, `spring.datasource.username` y `spring.datasource.password` en `application.properties` y reinicia.
+Edita `app.tenants.<id>.datasource.url`, `.username` y `.password` en `application.properties` y reinicia.
 
 ### "¿Cómo elijo en qué base ejecutar cada query?"
 

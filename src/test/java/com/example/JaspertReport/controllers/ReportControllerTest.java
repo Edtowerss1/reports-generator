@@ -36,7 +36,7 @@ class ReportControllerTest {
         request.setFormat("PDF");
         request.setQueries(List.of(createQuery("q1", "SELECT 1")));
 
-        ResponseEntity<?> response = controller.generar("any-token", request);
+        ResponseEntity<?> response = controller.generar(request);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertTrue(orchestrator.wasGenerateCalled);
@@ -48,7 +48,7 @@ class ReportControllerTest {
         request.setFormat("PDF");
         request.setQueries(List.of(createQuery("q1", "SELECT 1")));
 
-        ResponseEntity<?> response = controller.generar("any-token", request);
+        ResponseEntity<?> response = controller.generar(request);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertFalse(orchestrator.wasGenerateCalled);
@@ -60,7 +60,7 @@ class ReportControllerTest {
         request.setReportName("ventas");
         request.setQueries(List.of(createQuery("q1", "SELECT 1")));
 
-        ResponseEntity<?> response = controller.generar("any-token", request);
+        ResponseEntity<?> response = controller.generar(request);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
@@ -72,7 +72,7 @@ class ReportControllerTest {
         request.setFormat("PDF");
         request.setQueries(List.of());
 
-        ResponseEntity<?> response = controller.generar("any-token", request);
+        ResponseEntity<?> response = controller.generar(request);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
@@ -85,7 +85,7 @@ class ReportControllerTest {
         request.setFormat("PDF");
         request.setQueries(List.of(q));
 
-        ResponseEntity<?> response = controller.generar("any-token", request);
+        ResponseEntity<?> response = controller.generar(request);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
@@ -97,7 +97,7 @@ class ReportControllerTest {
         request.setPrinterName("Printer1");
         request.setQueries(List.of(createQuery("q1", "SELECT 1")));
 
-        ResponseEntity<?> response = controller.imprimir("any-token", request);
+        ResponseEntity<?> response = controller.imprimir(request);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertTrue(orchestrator.wasPrintCalled);
@@ -109,21 +109,22 @@ class ReportControllerTest {
         request.setReportName("ventas");
         request.setQueries(List.of(createQuery("q1", "SELECT 1")));
 
-        ResponseEntity<?> response = controller.imprimir("any-token", request);
+        ResponseEntity<?> response = controller.imprimir(request);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertFalse(orchestrator.wasPrintCalled);
     }
 
     @Test
-    void shouldAcceptAnyTokenValue() {
-        // Token validation is done by interceptors, not the controller
+    void shouldDelegateOnValidRequest() {
+        // Token validation is done by interceptors, not the controller.
+        // The controller only validates request body and delegates.
         var request = new ReportRequestDTO();
         request.setReportName("ventas");
         request.setFormat("PDF");
         request.setQueries(List.of(createQuery("q1", "SELECT 1")));
 
-        ResponseEntity<?> response = controller.generar("any-value-at-all", request);
+        ResponseEntity<?> response = controller.generar(request);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }

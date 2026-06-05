@@ -29,13 +29,13 @@ Tradicionalmente, cada nuevo reporte requería:
 
 - **🎨 Generación Dinámica** - Múltiples reportes sin tocar código
 - **📊 Multi-Formato** - PDF, XLSX, DOCX, HTML (extensible)
-- **⚙️ Compilación Automática** - `.jrxml` se compila on-demand
-- **🗂️ Configuración por Instancia** - Cada instancia conecta a su propia BD
+- **⚙️ Compilación Automática** - `.jrxml` se compila on-demand por tenant
+- **🏢 Multi-Tenant** - Múltiples clientes desde una sola instancia, con BD y reportes aislados por tenant
+- **🗂️ Modos de Despliegue** - Centralizado (multi-tenant) o Dedicado (instancia por cliente)
 - **🖨️ Impresión Directa** - Envía a impresoras del sistema sin exportar
-- **🔒 Autenticación por Header** - Protección con `X-Service-Token`
-- **🏗️ Arquitectura Extensible** - Patrón Strategy para exporters
-- **📝 Logging Centralizado** - Trazabilidad completa
-- **⚡ Rendimiento** - HikariCP, compilación en caché
+- **🔒 Autenticación por Token** - Token por tenant validado por interceptores
+- **🏗️ Arquitectura SOLID** - Interfaces con constructor injection, extensible sin modificar código
+- **📝 Logging Centralizado** - Trazabilidad completa por tenant
 
 ---
 
@@ -46,17 +46,29 @@ Tradicionalmente, cada nuevo reporte requería:
 ```
 ┌─────────────┐
 │   Cliente   │  POST /reportes/generar
-│  (PHP, etc) │  {reportName, format, queries}
+│  (PHP, etc) │  X-Service-Token: <tenant-token>
 └──────┬──────┘
        │
        ▼
 ┌──────────────────────┐
-│ ReportController     │  ← Validación + Token
+│ TokenValidator       │  ← Valida presencia del token
+│ (Interceptor)        │     Delega en TenantResolver
+└──────┬───────────────┘
+       │  401 si inválido
+       ▼
+┌──────────────────────┐
+│ TenantContextInit    │  ← Resuelve tenant, enforces dedicated mode
+│ (Interceptor)        │     Popula TenantContext (ThreadLocal)
+└──────┬───────────────┘
+       │  403 si no autorizado
+       ▼
+┌──────────────────────┐
+│ ReportController     │  ← Valida body, delega a orchestrator
 └──────┬───────────────┘
        │
        ▼
 ┌──────────────────────────────────────┐
-│   ReportOrchestrator (Orquestador)   │
+│   ReportOrchestrator (Orquestador)   │  ← Allowlist enforcement por tenant
 └──────┬───────────────────────────────┘
        │
    ┌───┴────────────────────────────────────┐
@@ -64,39 +76,62 @@ Tradicionalmente, cada nuevo reporte requería:
    ▼                                        ▼
 JasperFiller                        ExporterRegistry
    │                                        │
-   ├─ Por cada query:                  ├─ getExporter(format)
-   │  ├─ QueryExecutor.execute(sql)    │  │
-   │  ├─ → List<Map<String,Object>>    │  └─ → ReportExporter
-   │  └─ → JRMapCollectionDataSource   │     (Strategy Pattern)
-   │                                    │
-   └─ JasperFillManager.fillReport()   └─ export(jasperPrint)
-      → JasperPrint                        → byte[]
+   ├─ TemplateResolver (tenant path)   ├─ getExporter(format)
+   ├─ ReportCompiler (lazy)            │
+   ├─ Por cada query:                  └─ → ReportExporter
+   │  ├─ DataSourceProvider.getTemplate(tenantId)
+   │  ├─ → List<Map<String,Object>>
+   │  └─ → JRMapCollectionDataSource
+   │
+   └─ JasperFillManager.fillReport()
+      → JasperPrint                    → export(jasperPrint)
+                                           → byte[]
 ```
 
 ### Estructura de Paquetes
 
 ```
 src/main/java/com/example/JaspertReport/
+├── config/
+│   ├── TenantProperties.java             ← @ConfigurationProperties multi-tenant
+│   └── WebConfig.java                    ← Registro de interceptores
 ├── controllers/
-│   └── ReportController.java           ← HTTP endpoints
+│   └── ReportController.java            ← HTTP endpoints
+├── tenant/
+│   ├── Tenant.java                       ← Value record (id, ruta, datasource, allowlist)
+│   ├── TenantContext.java                ← ThreadLocal holder
+│   ├── TenantResolver.java               ← Interface: token → tenant
+│   ├── ConfigBasedTenantResolver.java    ← Implementación por configuración
+│   ├── TokenValidator.java               ← Interceptor SRP: valida header
+│   ├── TenantContextInitializer.java     ← Interceptor SRP: resuelve tenant
+│   ├── DataSourceProvider.java           ← Interface: tenant → JdbcTemplate
+│   └── DataSourceManager.java            ← HikariCP por tenant
 ├── services/
-│   ├── ReportOrchestrator.java         ← Coreografía
-│   ├── JasperFiller.java               ← Rellena reportes
-│   ├── QueryExecutor.java              ← Ejecuta SQL
-│   ├── ReportPrintService.java         ← Impresión
+│   ├── ReportOrchestrator.java          ← Coreografía + allowlist
+│   ├── JasperFiller.java                ← Rellena reportes (tenant-aware)
+│   ├── QueryExecutor.java               ← Ejecuta SQL (tenant-aware)
+│   ├── ReportPrintService.java          ← Impresión
+│   ├── ReportAllowlistService.java      ← Interface: validación de reportes
+│   ├── ConfigBasedAllowlistService.java ← Implementación por configuración
+│   ├── TemplateResolver.java            ← Interface: path de templates
+│   ├── TenantScopedTemplateResolver.java← Path por tenant
+│   ├── ReportCompiler.java              ← Interface: compilación lazy
+│   ├── LazyReportCompiler.java          ← Timestamp-based compilation
 │   └── exporters/
-│       ├── ReportExporter.java         ← Interface
+│       ├── ReportExporter.java          ← Interface
 │       ├── PdfReportExporter.java
 │       ├── ExcelReportExporter.java
 │       ├── HtmlReportExporter.java
 │       ├── DocxReportExporter.java
-│       └── ExporterRegistry.java       ← Autodescubrimiento
+│       └── ExporterRegistry.java        ← Autodescubrimiento
 ├── dtos/
 │   ├── ReportRequestDTO.java
 │   ├── QueryParamDTO.java
 │   ├── PrintRequestDTO.java
 │   └── ReportResult.java
 └── exceptions/
+    ├── TenantResolutionException.java    ← 401
+    ├── ReportNotAllowedException.java    ← 403
     ├── ReportNotFoundException.java
     ├── InvalidFormatException.java
     └── ReportGenerationException.java
@@ -152,16 +187,24 @@ cp src/main/resources/application.properties.example src/main/resources/applicat
 Edita `src/main/resources/application.properties`:
 
 ```properties
-# Token de autenticación (cambiar en producción)
-service.token=tu-token-secreto-aqui
+# Modo de despliegue: centralized (multi-tenant) o dedicated (instancia única)
+app.profile=centralized
 
-# Ruta a reportes (debe existir y terminar en /)
-app.reportes.ruta=/ruta/a/tus/reportes/
+# Tenant por defecto (compatible con la configuración anterior)
+app.tenants.default.service-token=tu-token-secreto-aqui
+app.tenants.default.reportes-ruta=/ruta/a/tus/reportes/
+app.tenants.default.datasource.url=jdbc:mysql://localhost:3306/tu_base_datos?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&zeroDateTimeBehavior=CONVERT_TO_NULL
+app.tenants.default.datasource.username=tu_usuario
+app.tenants.default.datasource.password=tu_contraseña
+app.tenants.default.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+app.tenants.default.allowed-reports=Laboratorio,StickerQR,Normal,Variables,Paciente
+app.tenants.default.allowed-formats=PDF,XLSX,DOCX,HTML
 
-# Base de datos
-spring.datasource.url=jdbc:mysql://localhost:3306/tu_base_datos?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&zeroDateTimeBehavior=CONVERT_TO_NULL
-spring.datasource.username=tu_usuario
-spring.datasource.password=tu_contraseña
+# Para agregar más tenants, repetir el bloque con otro ID:
+# app.tenants.cliente2.service-token=token-cliente-2
+# app.tenants.cliente2.reportes-ruta=/reportes/cliente2/
+# app.tenants.cliente2.datasource.url=jdbc:mysql://host2:3306/bd_cliente2
+# ...
 
 # Servidor
 server.port=8080
@@ -229,8 +272,9 @@ curl -X POST http://localhost:8080/reportes/generar \
 |--------|-------------|
 | `200 OK` | Reporte generado correctamente (body = bytes del archivo) |
 | `400 Bad Request` | Campos faltantes o queries vacías |
-| `401 Unauthorized` | Token inválido o ausente |
-| `404 Not Found` | El archivo `.jrxml` no existe |
+| `401 Unauthorized` | Token inválido, desconocido o ausente |
+| `403 Forbidden` | Reporte no permitido para este tenant |
+| `404 Not Found` | El archivo `.jrxml` no existe en el directorio del tenant |
 | `500 Server Error` | Error en SQL o generación |
 
 ### Imprimir un Reporte

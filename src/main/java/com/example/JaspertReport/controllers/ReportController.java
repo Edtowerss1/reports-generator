@@ -8,7 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -28,9 +27,7 @@ public class ReportController {
     }
 
     @PostMapping("/generar")
-    public ResponseEntity<?> generar(
-            @RequestHeader("X-Service-Token") String token,
-            @RequestBody ReportRequestDTO request) {
+    public ResponseEntity<?> generar(@RequestBody ReportRequestDTO request) {
 
         if (!isValidRequest(request)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -46,9 +43,7 @@ public class ReportController {
     }
 
     @PostMapping("/imprimir")
-    public ResponseEntity<?> imprimir(
-            @RequestHeader("X-Service-Token") String token,
-            @RequestBody PrintRequestDTO request) {
+    public ResponseEntity<?> imprimir(@RequestBody PrintRequestDTO request) {
 
         if (!isValidPrintRequest(request)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)

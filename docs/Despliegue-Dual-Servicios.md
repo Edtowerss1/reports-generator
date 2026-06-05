@@ -1,6 +1,8 @@
-# Despliegue Dual de Instancias — Arquitectura Multi-Servicio
+# Despliegue Dedicado — Arquitectura Multi-Servicio
 
-Este documento describe el proceso completo para desplegar dos instancias independientes del motor de reportes JaspertReport como servicios Windows en la misma máquina, cada una conectada a una base de datos diferente.
+> **Nota**: El modo recomendado es `centralized` (multi-tenant, una sola instancia atiende múltiples clientes). Este documento cubre el modo `dedicated` para casos que requieran instancias separadas por cliente (aislamiento físico, alta carga, requisitos contractuales).
+
+Este documento describe el proceso completo para desplegar instancias independientes del motor de reportes JaspertReport como servicios Windows, cada una asignada a un tenant específico.
 
 ---
 
@@ -25,9 +27,9 @@ JaspertReport.jar (único binario)
 ```
 
 Cada instancia:
-- Corre en su propio puerto
-- Conecta **exclusivamente** a su propia base de datos
-- Tiene su propio token de autenticación
+- Corre en modo `app.profile=dedicated` con `app.assigned-tenant=<id>`
+- Conecta **exclusivamente** a la base de datos de su tenant
+- Usa el token de servicio del tenant asignado
 - Tiene su propia carpeta de plantillas de reportes
 - Genera sus propios logs
 
