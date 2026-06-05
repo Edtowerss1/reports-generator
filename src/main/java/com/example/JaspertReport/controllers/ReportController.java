@@ -58,24 +58,27 @@ public class ReportController {
     }
 
     private boolean isValidRequest(ReportRequestDTO request) {
-        if (request.getReportName() == null || request.getReportName().isBlank())
+        if (!isValidBaseRequest(request.getReportName(), request.getQueries()))
             return false;
         if (request.getFormat() == null || request.getFormat().isBlank())
             return false;
-        if (request.getQueries() == null || request.getQueries().isEmpty())
-            return false;
-        return request.getQueries().stream().allMatch(q -> q.getParam() != null && !q.getParam().isBlank()
-                && q.getQuery() != null && !q.getQuery().isBlank());
+        return true;
     }
 
     private boolean isValidPrintRequest(PrintRequestDTO request) {
-        if (request.getReportName() == null || request.getReportName().isBlank())
+        if (!isValidBaseRequest(request.getReportName(), request.getQueries()))
             return false;
         if (request.getPrinterName() == null || request.getPrinterName().isBlank())
             return false;
-        if (request.getQueries() == null || request.getQueries().isEmpty())
+        return true;
+    }
+
+    private boolean isValidBaseRequest(String reportName, java.util.List<com.example.JaspertReport.dtos.QueryParamDTO> queries) {
+        if (reportName == null || reportName.isBlank())
             return false;
-        return request.getQueries().stream().allMatch(q -> q.getParam() != null && !q.getParam().isBlank()
+        if (queries == null || queries.isEmpty())
+            return false;
+        return queries.stream().allMatch(q -> q.getParam() != null && !q.getParam().isBlank()
                 && q.getQuery() != null && !q.getQuery().isBlank());
     }
 }

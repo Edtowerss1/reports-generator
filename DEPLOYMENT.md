@@ -245,6 +245,6 @@ server.ssl.key-store-type=JKS
 
 ## 📞 Soporte
 
-- **Documentación:** Ver `README.md` y `docs/` en el repositorio
+- **Documentación:** Ver `README.md` en el repositorio
 - **Issues:** https://github.com/tuusuario/JaspertReport/issues
-- **API Docs:** Ver `docs/API-Motor-Reportes.md`
+- **API Docs:** Ver `README.md` (sección de API REST)

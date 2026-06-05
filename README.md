@@ -197,7 +197,7 @@ app.tenants.default.datasource.url=jdbc:mysql://localhost:3306/tu_base_datos?use
 app.tenants.default.datasource.username=tu_usuario
 app.tenants.default.datasource.password=tu_contraseña
 app.tenants.default.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
-app.tenants.default.allowed-reports=Laboratorio,StickerQR,Normal,Variables,Paciente
+app.tenants.default.allowed-reports=MasterReport,DetailReport,SimpleReport
 app.tenants.default.allowed-formats=PDF,XLSX,DOCX,HTML
 
 # Para agregar más tenants, repetir el bloque con otro ID:
@@ -410,16 +410,6 @@ public class CsvReportExporter implements ReportExporter {
 ```
 
 Listo. El `ExporterRegistry` lo detectará automáticamente.
-
----
-
-## 📚 Documentación Adicional
-
-Ver la carpeta `docs/` para más detalles:
-
-- **[Diseño del Motor de Reportes](docs/plans/2026-02-26-generic-report-engine-design.md)** - Decisiones arquitectónicas
-- **[API REST](docs/API-Motor-Reportes.md)** - Endpoints y ejemplos
-- **[Deployment Dual](docs/Despliegue-Dual-Servicios.md)** - Multi-instancia en Windows
 
 ---
 

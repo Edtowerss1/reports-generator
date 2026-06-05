@@ -133,10 +133,6 @@ JaspertReport/
 │   │       └── fonts/                ← Custom fonts
 │   └── test/
 │       └── java/com/example/JaspertReport/
-├── docs/
-│   ├── API-Motor-Reportes.md
-│   ├── Despliegue-Dual-Servicios.md
-│   └── plans/
 ├── pom.xml                           ← Maven config
 ├── mvnw / mvnw.cmd                   ← Maven wrapper
 ├── README.md                         ← Para usuarios
@@ -369,7 +365,7 @@ Luego en IDE: Run → Edit Configurations → + Debug (remote)
 - **Spring Boot Docs:** https://spring.io/projects/spring-boot
 - **JasperReports API:** https://jasperreports.sourceforge.net/
 - **Maven Guide:** https://maven.apache.org/guides/
-- **Repo Local:** Abre `docs/API-Motor-Reportes.md`
+- **API Reference:** Ver sección "API REST" en `README.md`
 
 ---
 

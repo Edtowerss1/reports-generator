@@ -7,8 +7,10 @@ import com.example.JaspertReport.tenant.DataSourceProvider;
 import com.example.JaspertReport.tenant.Tenant;
 import com.example.JaspertReport.tenant.TenantContext;
 import net.sf.jasperreports.engine.JRDataSource;
+import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -173,6 +175,45 @@ class JasperFillerTest {
 
             assertNotNull(capturedParams[0], "params map must not be null");
             assertEquals("/reportes/acme/", capturedParams[0].get("SUBREPORT_DIR"));
+        }
+    }
+
+    @Test
+    void shouldUseDsDatosAsMainDatasourceForSimpleReport(@TempDir Path tempDir) throws Exception {
+        TenantContext.set(acmeTenant);
+
+        Path jasperPath = tempDir.resolve("SimpleReport.jasper");
+        Files.createFile(jasperPath);
+
+        when(templateResolver.resolve("acme", "SimpleReport")).thenReturn(jasperPath.toAbsolutePath());
+        Path jrxmlPath = jasperPath.resolveSibling("SimpleReport.jrxml");
+        when(reportCompiler.compileIfNeeded(jrxmlPath)).thenReturn(jasperPath.toAbsolutePath());
+
+        JdbcTemplate stubTemplate = new JdbcTemplate() {
+            @Override
+            public List<Map<String, Object>> queryForList(String sql) {
+                return List.of(Map.of("id", "1", "nombre", "Producto", "valor", "10.00"));
+            }
+        };
+        when(dataSourceProvider.getTemplate("acme")).thenReturn(stubTemplate);
+
+        var queries = List.of(createQuery("DS_DATOS", "SELECT 1"));
+
+        try (MockedStatic<JasperFillManager> jfm = mockStatic(JasperFillManager.class)) {
+            final JRDataSource[] capturedDataSource = new JRDataSource[1];
+            jfm.when(() -> JasperFillManager.fillReport(
+                    any(InputStream.class), anyMap(), any(JRDataSource.class)))
+                .thenAnswer(invocation -> {
+                    capturedDataSource[0] = invocation.getArgument(2);
+                    throw new RuntimeException("expected short-circuit");
+                });
+
+            assertThrows(ReportGenerationException.class,
+                () -> jasperFiller.fill("SimpleReport", queries));
+
+            assertNotNull(capturedDataSource[0], "main datasource must not be null");
+            assertTrue(capturedDataSource[0] instanceof JRMapCollectionDataSource);
+            assertFalse(capturedDataSource[0] instanceof JREmptyDataSource);
         }
     }
 

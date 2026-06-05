@@ -93,13 +93,30 @@ public class JasperFiller {
         return params;
     }
 
+    /**
+     * Resolve the main datasource for the report.
+     *
+     * IMPORTANT: Different reports have different datasource requirements:
+     * - SimpleReport: Needs DS_DATOS as main datasource for field evaluation.
+     * - MasterReport: Uses JREmptyDataSource as main (with DS_DATOS passed to subreport only).
+     * - Other reports: Use JREmptyDataSource by default.
+     *
+     * This method implements report-specific datasource routing. Do not add new
+     * special cases without explicit business requirement and template review.
+     *
+     * @param reportName the name of the report template
+     * @param params parameters map containing datasources
+     * @return the main datasource for the report
+     */
     private JRDataSource resolveMainDataSource(String reportName, Map<String, Object> params) {
-        if ("StickerQR".equalsIgnoreCase(reportName)) {
-            Object dataSource = params.get("DS_STICKER");
+        // SimpleReport requires DS_DATOS as main datasource
+        if ("SimpleReport".equalsIgnoreCase(reportName)) {
+            Object dataSource = params.get("DS_DATOS");
             if (dataSource instanceof JRDataSource) {
                 return (JRDataSource) dataSource;
             }
         }
+
         return new JREmptyDataSource();
     }
 }
