@@ -1,0 +1,60 @@
+schema: spec-driven
+
+context: |
+  Tech stack: Java 17, Spring Boot 3.4.12, Maven, JasperReports 7.0.3, MySQL
+  Architecture: Layered (controllers/services/exporters) with Strategy + Registry patterns
+  Testing: JUnit Jupiter via spring-boot-starter-test; only a context-load smoke test exists
+  Style: Constructor injection, Lombok DTOs, Spanish/English mixed naming
+
+testing:
+  strict_tdd: true
+  runner:
+    command: "./mvnw test"
+    framework: JUnit Jupiter (spring-boot-starter-test)
+  layers:
+    unit:
+      available: true
+      tool: JUnit Jupiter + Mockito (available via starter-test)
+    integration:
+      available: false
+      tool: null
+    e2e:
+      available: false
+      tool: null
+  coverage:
+    available: false
+    command: null
+  quality:
+    linter:
+      available: false
+      command: null
+    type_checker:
+      available: false
+      command: null
+    formatter:
+      available: false
+      command: null
+
+rules:
+  proposal:
+    - Include rollback plan for risky changes
+    - Consider multi-tenant report isolation (each instance binds to one DB)
+  specs:
+    - Use Given/When/Then for scenarios
+    - Use RFC 2119 keywords (MUST, SHALL, SHOULD, MAY)
+  design:
+    - Include sequence diagrams for complex flows
+    - Document architecture decisions with rationale
+  tasks:
+    - Group by phase, use hierarchical numbering
+    - Keep tasks completable in one session
+  apply:
+    - Follow existing code patterns (constructor injection, Lombok DTOs, exporter strategy)
+    tdd: false
+    test_command: "./mvnw test"
+  verify:
+    test_command: "./mvnw test"
+    build_command: "./mvnw package -DskipTests"
+    coverage_threshold: 0
+  archive:
+    - Warn before merging destructive deltas
