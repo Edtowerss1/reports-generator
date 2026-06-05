@@ -64,7 +64,7 @@ Chain strategy: pending
 
 ## Phase 5: Integration Testing — End-to-End Flow
 
-- [ ] 5.1 E2E happy path: valid token + allowed report → bytes (R1, A1, D1, T1, F1)
-- [ ] 5.2 Error flows: unknown token 401 (R2), missing token 401 (R3), disallowed 403 (A2, A3)
-- [ ] 5.3 Dedicated mode: wrong tenant token → 403 (P2, P3)
-- [ ] 5.4 Failure isolation: mid-flow fail short-circuits (F2), cross-tenant isolation (D3, F3)
+- [x] 5.1 E2E happy path: valid token + allowed report → bytes (R1, A1, D1, T1, F1)
+- [x] 5.2 Error flows: unknown token 401 (R2), missing token 401 (R3), disallowed 403 (A2, A3)
+- [x] 5.3 Dedicated mode: wrong tenant token → 403 (P2, P3)
+- [x] 5.4 Failure isolation: mid-flow fail short-circuits (F2), cross-tenant isolation (D3, F3)
