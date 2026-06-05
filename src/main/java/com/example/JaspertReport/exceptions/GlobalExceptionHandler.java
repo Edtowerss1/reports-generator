@@ -42,4 +42,14 @@ public class GlobalExceptionHandler {
                 : "";
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage() + rootCause);
     }
+
+    @ExceptionHandler(TenantResolutionException.class)
+    public ResponseEntity<String> handleTenantResolution(TenantResolutionException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+    }
+
+    @ExceptionHandler(ReportNotAllowedException.class)
+    public ResponseEntity<String> handleReportNotAllowed(ReportNotAllowedException e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+    }
 }
