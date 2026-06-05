@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Example: Master report with subreport for JaspertReport multi-tenant engine -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
               name="MasterReport" language="java"
               pageWidth="595" pageHeight="842"
               columnWidth="555" leftMargin="20" rightMargin="20"
               topMargin="20" bottomMargin="20"
               uuid="b2c3d4e5-f6a7-8901-bcde-f12345678901">
+
+    <property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
 
     <parameter name="DS_EMPRESA" forPrompting="false"
                class="net.sf.jasperreports.engine.data.JRMapCollectionDataSource"/>
@@ -17,15 +21,13 @@
 
     <title>
         <band height="70">
-            <staticText>
-                <reportElement x="0" y="5" width="555" height="25" uuid="mt-uuid"/>
+            <element kind="staticText" uuid="mt-uuid" x="0" y="5" width="555" height="25">
                 <textElement textAlignment="Center">
                     <font fontName="Arial" size="14" isBold="true"/>
                 </textElement>
                 <text><![CDATA[Sample Report — Master with Subreport]]></text>
-            </staticText>
-            <textField>
-                <reportElement x="0" y="35" width="555" height="15" uuid="mc-uuid"/>
+            </element>
+            <element kind="textField" uuid="mc-uuid" x="0" y="35" width="555" height="15">
                 <textElement textAlignment="Center">
                     <font fontName="Arial" size="9"/>
                 </textElement>
@@ -34,32 +36,28 @@
                         ? "Demo Company"
                         : (String)((java.util.Map)$P{DS_EMPRESA}.getData().get(0)).get("nombre")
                 ]]></textFieldExpression>
-            </textField>
-            <line>
-                <reportElement x="0" y="60" width="555" height="1" uuid="ml-uuid"/>
-            </line>
+            </element>
+            <element kind="line" uuid="ml-uuid" x="0" y="60" width="555" height="1"/>
         </band>
     </title>
 
     <detail>
         <band height="40" splitType="Stretch">
-            <subreport>
-                <reportElement x="0" y="0" width="555" height="38" uuid="sr-uuid"/>
+            <element kind="subreport" uuid="sr-uuid" x="0" y="0" width="555" height="38">
                 <dataSourceExpression><![CDATA[$P{DS_DATOS}]]></dataSourceExpression>
                 <subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "DetailReport.jasper"]]></subreportExpression>
-            </subreport>
+            </element>
         </band>
     </detail>
 
     <pageFooter>
         <band height="20">
-            <textField>
-                <reportElement x="455" y="2" width="100" height="16" uuid="mpf-uuid"/>
+            <element kind="textField" uuid="mpf-uuid" x="455" y="2" width="100" height="16">
                 <textElement textAlignment="Right">
                     <font fontName="Arial" size="8"/>
                 </textElement>
                 <textFieldExpression><![CDATA["Page " + $V{PAGE_NUMBER}]]></textFieldExpression>
-            </textField>
+            </element>
         </band>
     </pageFooter>
 

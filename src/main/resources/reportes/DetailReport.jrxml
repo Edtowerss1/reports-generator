@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Example: Subreport used by MasterReport for JaspertReport multi-tenant engine -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
               name="DetailReport" language="java"
               pageWidth="555" pageHeight="842"
               columnWidth="555" leftMargin="0" rightMargin="0"
               topMargin="0" bottomMargin="0"
               uuid="c3d4e5f6-a7b8-9012-cdef-123456789012">
+
+    <property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
 
     <parameter name="DS_DATOS" forPrompting="false"
                class="net.sf.jasperreports.engine.JRDataSource"/>
@@ -19,62 +23,52 @@
 
     <columnHeader>
         <band height="20">
-            <staticText>
-                <reportElement x="0"   y="2" width="40"  height="16" uuid="dh1-uuid"/>
+            <element kind="staticText" uuid="dh1-uuid" x="0"   y="2" width="40"  height="16">
                 <textElement><font fontName="Arial" size="9" isBold="true"/></textElement>
                 <text><![CDATA[ID]]></text>
-            </staticText>
-            <staticText>
-                <reportElement x="50"  y="2" width="200" height="16" uuid="dh2-uuid"/>
+            </element>
+            <element kind="staticText" uuid="dh2-uuid" x="50"  y="2" width="200" height="16">
                 <textElement><font fontName="Arial" size="9" isBold="true"/></textElement>
                 <text><![CDATA[Item]]></text>
-            </staticText>
-            <staticText>
-                <reportElement x="260" y="2" width="80"  height="16" uuid="dh3-uuid"/>
+            </element>
+            <element kind="staticText" uuid="dh3-uuid" x="260" y="2" width="80"  height="16">
                 <textElement textAlignment="Right">
                     <font fontName="Arial" size="9" isBold="true"/>
                 </textElement>
                 <text><![CDATA[Qty]]></text>
-            </staticText>
-            <staticText>
-                <reportElement x="350" y="2" width="100" height="16" uuid="dh4-uuid"/>
+            </element>
+            <element kind="staticText" uuid="dh4-uuid" x="350" y="2" width="100" height="16">
                 <textElement textAlignment="Right">
                     <font fontName="Arial" size="9" isBold="true"/>
                 </textElement>
                 <text><![CDATA[Price]]></text>
-            </staticText>
-            <staticText>
-                <reportElement x="460" y="2" width="95"  height="16" uuid="dh5-uuid"/>
+            </element>
+            <element kind="staticText" uuid="dh5-uuid" x="460" y="2" width="95"  height="16">
                 <textElement textAlignment="Right">
                     <font fontName="Arial" size="9" isBold="true"/>
                 </textElement>
                 <text><![CDATA[Total]]></text>
-            </staticText>
+            </element>
         </band>
     </columnHeader>
 
     <detail>
         <band height="18">
-            <textField>
-                <reportElement x="0"   y="1" width="40"  height="16" uuid="dd1-uuid"/>
+            <element kind="textField" uuid="dd1-uuid" x="0"   y="1" width="40"  height="16">
                 <textFieldExpression><![CDATA[$F{id}]]></textFieldExpression>
-            </textField>
-            <textField>
-                <reportElement x="50"  y="1" width="200" height="16" uuid="dd2-uuid"/>
+            </element>
+            <element kind="textField" uuid="dd2-uuid" x="50"  y="1" width="200" height="16">
                 <textFieldExpression><![CDATA[$F{nombre}]]></textFieldExpression>
-            </textField>
-            <textField>
-                <reportElement x="260" y="1" width="80"  height="16" uuid="dd3-uuid"/>
+            </element>
+            <element kind="textField" uuid="dd3-uuid" x="260" y="1" width="80"  height="16">
                 <textElement textAlignment="Right"/>
                 <textFieldExpression><![CDATA[$F{cantidad}]]></textFieldExpression>
-            </textField>
-            <textField>
-                <reportElement x="350" y="1" width="100" height="16" uuid="dd4-uuid"/>
+            </element>
+            <element kind="textField" uuid="dd4-uuid" x="350" y="1" width="100" height="16">
                 <textElement textAlignment="Right"/>
                 <textFieldExpression><![CDATA[$F{precio}]]></textFieldExpression>
-            </textField>
-            <textField>
-                <reportElement x="460" y="1" width="95"  height="16" uuid="dd5-uuid"/>
+            </element>
+            <element kind="textField" uuid="dd5-uuid" x="460" y="1" width="95"  height="16">
                 <textElement textAlignment="Right"/>
                 <textFieldExpression><![CDATA[
                     new java.math.BigDecimal(
@@ -85,7 +79,7 @@
                         )
                     )
                 ]]></textFieldExpression>
-            </textField>
+            </element>
         </band>
     </detail>
 
