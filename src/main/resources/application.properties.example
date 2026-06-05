@@ -13,13 +13,16 @@ app.assigned-tenant=
 
 # Definición de tenants (repetir por cada tenant)
 # El nombre del tenant (ej: acme) es el identificador único.
+# allowed-reports: si se omite, se permiten todos los reportes (compatibilidad).
+#                 Para restringir, listar separado por comas.
+#                 Vacío explícito (allowed-reports=) bloquea todos.
 app.tenants.acme.service-token=${ACME_TOKEN:dev-token-2026}
 app.tenants.acme.reportes-ruta=${ACME_REPORTS_PATH:/reportes/acme/}
 app.tenants.acme.datasource.url=${ACME_DB_URL:jdbc:mysql://localhost:3306/acme?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&zeroDateTimeBehavior=CONVERT_TO_NULL}
 app.tenants.acme.datasource.username=${ACME_DB_USER:root}
 app.tenants.acme.datasource.password=${ACME_DB_PASSWORD:}
 app.tenants.acme.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
-app.tenants.acme.allowed-reports=ventas,stock,clientes
+app.tenants.acme.allowed-reports=Laboratorio,StickerQR,Normal,Variables,Paciente
 app.tenants.acme.allowed-formats=PDF,XLSX,DOCX,HTML
 
 # ==========================================

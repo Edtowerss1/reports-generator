@@ -2,8 +2,8 @@ schema: spec-driven
 
 context: |
   Tech stack: Java 17, Spring Boot 3.4.12, Maven, JasperReports 7.0.3, MySQL
-  Architecture: Layered (controllers/services/exporters) with Strategy + Registry patterns
-  Testing: JUnit Jupiter via spring-boot-starter-test; only a context-load smoke test exists
+  Architecture: Layered (controllers/services/exporters) with Strategy + Registry patterns; multi-tenant stateless engine with SOLID interfaces (TenantResolver, ReportAllowlistService, TemplateResolver, ReportCompiler, DataSourceProvider) and HandlerInterceptor-based token resolution
+  Testing: JUnit Jupiter via spring-boot-starter-test; 103 tests (unit + integration + E2E) covering 19 spec scenarios across 5 tenants
   Style: Constructor injection, Lombok DTOs, Spanish/English mixed naming
 
 testing:
@@ -16,11 +16,11 @@ testing:
       available: true
       tool: JUnit Jupiter + Mockito (available via starter-test)
     integration:
-      available: false
-      tool: null
+      available: true
+      tool: JUnit Jupiter + MockMvc (@SpringBootTest with test profiles)
     e2e:
-      available: false
-      tool: null
+      available: true
+      tool: JUnit Jupiter + MockMvc (H2 per tenant, full interceptor chain)
   coverage:
     available: false
     command: null

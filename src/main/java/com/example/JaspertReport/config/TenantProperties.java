@@ -43,8 +43,11 @@ public class TenantProperties {
         private String serviceToken;
         private String reportesRuta;
         private Datasource datasource = new Datasource();
-        private List<String> allowedReports = new ArrayList<>();
-        private List<String> allowedFormats = new ArrayList<>();
+        // null = not configured → allow all (backward compatibility)
+        // empty list = explicitly configured empty → block all (spec A3)
+        private List<String> allowedReports;
+        // null = not configured → allow all formats
+        private List<String> allowedFormats;
 
         public String getServiceToken() {
             return serviceToken;
