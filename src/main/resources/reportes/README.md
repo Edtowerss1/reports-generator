@@ -17,5 +17,18 @@ They demonstrate the two main report patterns:
 
 ## Usage
 
-Place `.jrxml` files in the tenant's configured `reportes-ruta` directory.
-The engine compiles them to `.jasper` automatically on first request.
+Place `.jrxml` files in the tenant's configured `reportes-ruta` directory
+(`app.tenants.<id>.reportes-ruta` in `application.properties`).
+
+The engine compiles them to `.jasper` automatically on first request (lazy compilation
+via `LazyReportCompiler`).
+
+**Important:**
+- **No shared fallback** — if a template is not found in the tenant's directory,
+  the request fails with 404. There is no global template directory.
+- **SUBREPORT_DIR is tenant-scoped** — the engine sets it to the tenant's
+  `reportes-ruta` automatically. Subreports must be in the same tenant directory.
+- **Pre-compiled `.jasper` files** are shipped with the project for the example
+  templates. The lazy compiler skips recompilation if the `.jasper` is up to date.
+- **Field types must match** — JRXML fields are `java.lang.String`. SQL queries
+  must return VARCHAR columns. Numeric columns will not be auto-cast (null values).
