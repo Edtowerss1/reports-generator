@@ -4,7 +4,6 @@ import com.example.JaspertReport.dtos.PrintRequestDTO;
 import com.example.JaspertReport.dtos.ReportRequestDTO;
 import com.example.JaspertReport.dtos.ReportResult;
 import com.example.JaspertReport.services.ReportOrchestrator;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,14 +12,16 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Thin controller that validates request body and delegates to the orchestrator.
+ * Authentication is handled by {@code TokenValidator} and
+ * {@code TenantContextInitializer} interceptors (registered in WebConfig).
+ */
 @RestController
 @RequestMapping("/reportes")
 public class ReportController {
 
     private final ReportOrchestrator reportOrchestrator;
-
-    @Value("${service.token}")
-    private String serviceToken;
 
     public ReportController(ReportOrchestrator reportOrchestrator) {
         this.reportOrchestrator = reportOrchestrator;
@@ -30,10 +31,6 @@ public class ReportController {
     public ResponseEntity<?> generar(
             @RequestHeader("X-Service-Token") String token,
             @RequestBody ReportRequestDTO request) {
-
-        if (!serviceToken.equals(token)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
 
         if (!isValidRequest(request)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -52,10 +49,6 @@ public class ReportController {
     public ResponseEntity<?> imprimir(
             @RequestHeader("X-Service-Token") String token,
             @RequestBody PrintRequestDTO request) {
-
-        if (!serviceToken.equals(token)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
 
         if (!isValidPrintRequest(request)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
