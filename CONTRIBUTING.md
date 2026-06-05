@@ -48,7 +48,7 @@ Qué está pasando.
 
 ```bash
 # Clonar el repositorio
-git clone https://github.com/tuusuario/JaspertReport.git
+git clone https://github.com/Edtowerss1/reports-generator.git
 cd JaspertReport
 
 # Crear rama de feature
@@ -101,13 +101,15 @@ mvn clean install
 src/
 ├── main/
 │   ├── java/com/example/JaspertReport/
+│   │   ├── config/             ← @ConfigurationProperties, WebConfig
 │   │   ├── controllers/        ← REST endpoints
-│   │   ├── services/          ← Lógica de negocio
-│   │   ├── dtos/              ← Data Transfer Objects
+│   │   ├── tenant/             ← Multi-tenant: resolver, context, interceptors, datasource
+│   │   ├── services/           ← Lógica de negocio + interfaces SOLID
+│   │   ├── dtos/               ← Data Transfer Objects
 │   │   └── exceptions/        ← Excepciones personalizadas
 │   └── resources/
-│       ├── application.properties
-│       └── reportes/          ← Plantillas JRXML
+│       ├── reportes/           ← Plantillas JRXML de ejemplo
+│       └── fonts/              ← Fuentes para JasperReports
 └── test/
     └── java/com/example/JaspertReport/
 ```
@@ -124,9 +126,9 @@ El proyecto sigue estos principios:
 
 Si agregas una feature:
 
-1. Actualiza el `README.md`
-2. Agrega comentarios en el código si es complejo
-3. Crea/actualiza documentación en `docs/` si es necesario
+1. Actualiza el `README.md` si el cambio afecta la experiencia de uso
+2. Agrega comentarios en el código si la lógica es compleja
+3. Si es una feature grande, considerá documentarla en `DEVELOPMENT.md`
 
 ## 🚀 Release Notes
 
@@ -135,7 +137,7 @@ Cambios importantes van a `CHANGELOG.md` (si existe).
 ## ❓ ¿Preguntas?
 
 - Abre una [Discussion](https://github.com/Edtowerss1/reports-generator/discussions)
-- Revisa la documentación en `docs/`
+- Revisá el `README.md` y `DEVELOPMENT.md`
 
 ---
 
