@@ -37,11 +37,11 @@ Chain strategy: pending
 
 ## Phase 2: Core Abstractions — Interfaces + Implementations
 
-- [ ] 2.1 Test + `TenantResolver` interface + `ConfigBasedTenantResolver`
-- [ ] 2.2 Test + `ReportAllowlistService` interface + `ConfigBasedAllowlistService`
-- [ ] 2.3 Test + `TemplateResolver` interface + `TenantScopedTemplateResolver`
-- [ ] 2.4 Test + `ReportCompiler` interface + `LazyReportCompiler`
-- [ ] 2.5 Test + `DataSourceProvider` interface + `DataSourceManager` (HikariCP per tenant)
+- [x] 2.1 Test + `TenantResolver` interface + `ConfigBasedTenantResolver`
+- [x] 2.2 Test + `ReportAllowlistService` interface + `ConfigBasedAllowlistService`
+- [x] 2.3 Test + `TemplateResolver` interface + `TenantScopedTemplateResolver`
+- [x] 2.4 Test + `ReportCompiler` interface + `LazyReportCompiler`
+- [x] 2.5 Test + `DataSourceProvider` interface + `DataSourceManager` (HikariCP per tenant)
 
 ## Phase 3: Wiring — Interceptors, Config, Error Handlers
 
