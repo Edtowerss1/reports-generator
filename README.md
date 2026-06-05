@@ -148,22 +148,14 @@ src/main/java/com/example/JaspertReport/
 
 ---
 
-## 📖 Documentación por Audiencia
+## 📖 Documentación
 
-- **👤 Usuarios finales:** Ver [DEPLOYMENT.md](DEPLOYMENT.md)
-  - Instalar ejecutable portable
-  - Instalar JAR o Docker
-  - Solución de problemas
-  
-- **👨‍💻 Desarrolladores:** Ver [DEVELOPMENT.md](DEVELOPMENT.md)
-  - Setup de desarrollo local
-  - Tests y debugging
-  - Agregar nuevas features
-  
-- **🚀 DevOps/Producción:** Ver [PRODUCTION.md](PRODUCTION.md)
-  - Deployment seguro
-  - Multi-instancia
-  - Monitoreo y backups
+- **[README](README.md)** — esta guía: instalación, uso, arquitectura
+- **[DEPLOYMENT.md](DEPLOYMENT.md)** — despliegue multi-tenant en producción
+- **[DEVELOPMENT.md](DEVELOPMENT.md)** — setup de desarrollo, tests, extensibilidad
+- **[PRODUCTION.md](PRODUCTION.md)** — seguridad, monitoreo, backups
+- **[CONTRIBUTING.md](CONTRIBUTING.md)** — guía de contribución
+- **[Postman Collection](postman/)** — colección de requests para probar la API
 
 ---
 
@@ -320,11 +312,12 @@ En JasperStudio, puedes referenciar campos así:
   .collect(Collectors.joining(", "))
 ```
 
-### Paso 3: Guardar y copiar
+### Paso 3: Guardar y copiar al directorio del tenant
 
 1. Guarda como `MiReporte.jrxml`
-2. Cópialo a `/ruta/a/tus/reportes/`
-3. La aplicación lo compilará automáticamente al primer uso
+2. Cópialo a la carpeta configurada para tu tenant (`app.tenants.<id>.reportes-ruta`)
+3. La aplicación lo compilará automáticamente al primer uso (compilación lazy)
+4. Los subreportes deben estar en el mismo directorio del tenant (`SUBREPORT_DIR` se resuelve por tenant)
 
 ### Paso 4: Llamar desde cliente
 
@@ -362,12 +355,31 @@ fetch('/reportes/generar', {
 ## 🧪 Testing
 
 ```bash
-# Ejecutar pruebas unitarias
-mvn test
-
-# Ejecutar todas las pruebas incluyendo integración
-mvn verify
+# Ejecutar todas las pruebas (103 tests, JUnit 5 + H2)
+./mvnw test
 ```
+
+### Desarrollo local sin MySQL
+
+El proyecto incluye un perfil `test` con H2 en memoria:
+
+```bash
+./mvnw spring-boot:run -Dspring-boot.run.profiles=test
+```
+
+Esto levanta 3 tenants (`default`, `acme`, `corp`) con bases H2 independientes.  
+Usá la [colección de Postman](postman/) para probar los endpoints sin configurar MySQL.
+
+---
+
+## 🗂️ Modos de Despliegue
+
+| Modo | `app.profile` | Descripción |
+|------|--------------|-------------|
+| **Centralizado** | `centralized` | Una instancia atiende múltiples tenants. Cada request resuelve el tenant desde el token. |
+| **Dedicado** | `dedicated` | Una instancia por tenant. `app.assigned-tenant` define cuál. Rechaza tokens de otros tenants (403). |
+
+Ambos modos usan **el mismo binario**. Solo cambia la configuración.
 
 ---
 
