@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Example: Simple single-datasource report for JaspertReport multi-tenant engine -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+              name="SimpleReport" language="java"
+              pageWidth="595" pageHeight="842"
+              columnWidth="555" leftMargin="20" rightMargin="20"
+              topMargin="20" bottomMargin="20"
+              uuid="a1b2c3d4-e5f6-7890-abcd-ef1234567890">
+
+    <parameter name="DS_DATOS" forPrompting="false"
+               class="net.sf.jasperreports.engine.JRDataSource"/>
+
+    <query language="sql"><![CDATA[]]></query>
+
+    <field name="id"     class="java.lang.String"/>
+    <field name="nombre" class="java.lang.String"/>
+    <field name="valor"  class="java.lang.String"/>
+
+    <title>
+        <band height="50">
+            <staticText>
+                <reportElement x="0" y="10" width="555" height="30" uuid="t1-uuid"/>
+                <textElement textAlignment="Center">
+                    <font fontName="Arial" size="16" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Sample Report — SimpleReport]]></text>
+            </staticText>
+        </band>
+    </title>
+
+    <columnHeader>
+        <band height="25">
+            <staticText>
+                <reportElement x="0"   y="5" width="50"  height="15" uuid="h1-uuid"/>
+                <textElement><font fontName="Arial" size="10" isBold="true"/></textElement>
+                <text><![CDATA[ID]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="60"  y="5" width="250" height="15" uuid="h2-uuid"/>
+                <textElement><font fontName="Arial" size="10" isBold="true"/></textElement>
+                <text><![CDATA[Name]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="320" y="5" width="235" height="15" uuid="h3-uuid"/>
+                <textElement><font fontName="Arial" size="10" isBold="true"/></textElement>
+                <text><![CDATA[Value]]></text>
+            </staticText>
+            <line>
+                <reportElement x="0" y="23" width="555" height="1" uuid="hl-uuid"/>
+            </line>
+        </band>
+    </columnHeader>
+
+    <detail>
+        <band height="20">
+            <textField>
+                <reportElement x="0"   y="2" width="50"  height="16" uuid="d1-uuid"/>
+                <textFieldExpression><![CDATA[$F{id}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="60"  y="2" width="250" height="16" uuid="d2-uuid"/>
+                <textFieldExpression><![CDATA[$F{nombre}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="320" y="2" width="235" height="16" uuid="d3-uuid"/>
+                <textFieldExpression><![CDATA[$F{valor}]]></textFieldExpression>
+            </textField>
+        </band>
+    </detail>
+
+    <pageFooter>
+        <band height="20">
+            <textField>
+                <reportElement x="455" y="2" width="100" height="16" uuid="pf-uuid"/>
+                <textElement textAlignment="Right">
+                    <font fontName="Arial" size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA["Page " + $V{PAGE_NUMBER}]]></textFieldExpression>
+            </textField>
+        </band>
+    </pageFooter>
+
+</jasperReport>
