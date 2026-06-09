@@ -25,7 +25,7 @@ Guía para operar el motor de reportes multi-tenant en producción.
     │  JaspertReport    │          │  JaspertReport    │
     │  (centralized)    │          │  (dedicated)      │
     │  :8080            │          │  :8081            │
-    │  multi-tenant     │          │  single-tenant    │
+    │  multi-tenant     │          │  dedicated        │
     └────┬────┬────┬────┘          └────────┬─────────┘
          │    │    │                        │
          ▼    ▼    ▼                        ▼

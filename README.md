@@ -182,7 +182,7 @@ Edita `src/main/resources/application.properties`:
 # Modo de despliegue: centralized (multi-tenant) o dedicated (instancia única)
 app.profile=centralized
 
-# Tenant por defecto (compatible con la configuración anterior)
+# Tenant por defecto
 app.tenants.default.service-token=tu-token-secreto-aqui
 app.tenants.default.reportes-ruta=/ruta/a/tus/reportes/
 app.tenants.default.datasource.url=jdbc:mysql://localhost:3306/tu_base_datos?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&zeroDateTimeBehavior=CONVERT_TO_NULL
@@ -255,8 +255,7 @@ curl -X POST http://localhost:8080/reportes/generar \
 | `format` | String | ✅ | Formato de salida: `PDF`, `XLSX`, `DOCX`, `HTML` |
 | `queries` | Array | ✅ | Lista de queries con parámetros |
 | `queries[].param` | String | ✅ | Nombre del parámetro en el reporte (ej: `DS_EMPRESA`) |
-| `queries[].query` | String | ✅ | Query SQL a ejecutar |
-| `queries[].datasource` | String | ❌ | Campo legacy: se ignora en la arquitectura actual |
+| `queries[].query` | String | ✅ | Query SQL a ejecutar contra la BD del tenant |
 
 **Respuestas:**
 
