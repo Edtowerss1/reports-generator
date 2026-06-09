@@ -3,6 +3,7 @@ package com.example.JaspertReport.config;
 import com.example.JaspertReport.tenant.TenantContextInitializer;
 import com.example.JaspertReport.tenant.TokenValidator;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -21,16 +22,19 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
+    @NonNull
     private final TokenValidator tokenValidator;
+
+    @NonNull
     private final TenantContextInitializer tenantContextInitializer;
 
-    public WebConfig(TokenValidator tokenValidator, TenantContextInitializer tenantContextInitializer) {
+    public WebConfig(@NonNull TokenValidator tokenValidator, @NonNull TenantContextInitializer tenantContextInitializer) {
         this.tokenValidator = tokenValidator;
         this.tenantContextInitializer = tenantContextInitializer;
     }
 
     @Override
-    public void addInterceptors(InterceptorRegistry registry) {
+    public void addInterceptors(@NonNull InterceptorRegistry registry) {
         registry.addInterceptor(tokenValidator)
                 .addPathPatterns("/reportes/**");
 

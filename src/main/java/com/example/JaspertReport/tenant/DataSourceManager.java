@@ -80,6 +80,11 @@ public class DataSourceManager implements DataSourceProvider {
             String tenantId = entry.getKey();
             try {
                 var ds = entry.getValue().getDataSource();
+                if (ds == null) {
+                    throw new RuntimeException(
+                        "Failed to validate datasource for tenant '" + tenantId + "': datasource is null"
+                    );
+                }
                 try (var conn = ds.getConnection()) {
                     log.debug("Datasource OK for tenant '{}'", tenantId);
                 }

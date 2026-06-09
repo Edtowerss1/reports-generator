@@ -6,6 +6,7 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SuppressWarnings("null")
 class TenantTest {
 
     @Test

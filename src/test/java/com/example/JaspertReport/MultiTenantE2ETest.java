@@ -45,6 +45,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * <p>
  * Covers specs R1-R3, A1-A3, P2, F1-F2.
  */
+@SuppressWarnings("null")
 class MultiTenantE2ETest {
 
     private static final Tenant ACME_TENANT = new Tenant(

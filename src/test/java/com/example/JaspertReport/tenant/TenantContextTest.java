@@ -9,6 +9,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SuppressWarnings("null")
 class TenantContextTest {
 
     private final Tenant sampleTenant = new Tenant(

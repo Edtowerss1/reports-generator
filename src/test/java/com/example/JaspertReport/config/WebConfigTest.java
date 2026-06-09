@@ -8,6 +8,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SuppressWarnings("null")
 class WebConfigTest {
 
     @Test

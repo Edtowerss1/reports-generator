@@ -19,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * interceptors in Phase 3). The controller only validates the request body
  * and delegates to the orchestrator.
  */
+@SuppressWarnings("null")
 class ReportControllerTest {
 
     private final StubReportOrchestrator orchestrator = new StubReportOrchestrator();

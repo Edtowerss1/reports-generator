@@ -9,7 +9,6 @@ import com.example.JaspertReport.tenant.TenantContext;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,6 +32,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
+@SuppressWarnings({"null", "unchecked"})
 class JasperFillerTest {
 
     @Mock
@@ -96,7 +96,7 @@ class JasperFillerTest {
 
         try (MockedStatic<JasperFillManager> jfm = mockStatic(JasperFillManager.class)) {
             jfm.when(() -> JasperFillManager.fillReport(
-                    any(InputStream.class), anyMap(), any(JRDataSource.class)))
+                    nullable(InputStream.class), anyMap(), any(JRDataSource.class)))
                 .thenThrow(new RuntimeException("expected"));
 
             assertThrows(ReportGenerationException.class,
@@ -135,7 +135,7 @@ class JasperFillerTest {
 
         try (MockedStatic<JasperFillManager> jfm = mockStatic(JasperFillManager.class)) {
             jfm.when(() -> JasperFillManager.fillReport(
-                    any(InputStream.class), anyMap(), any(JRDataSource.class)))
+                    nullable(InputStream.class), anyMap(), any(JRDataSource.class)))
                 .thenThrow(new RuntimeException("expected-compiled-path"));
 
             ReportGenerationException ex = assertThrows(ReportGenerationException.class,
@@ -164,7 +164,7 @@ class JasperFillerTest {
         try (MockedStatic<JasperFillManager> jfm = mockStatic(JasperFillManager.class)) {
             final Map<String, Object>[] capturedParams = new Map[]{null};
             jfm.when(() -> JasperFillManager.fillReport(
-                    any(InputStream.class), anyMap(), any(JRDataSource.class)))
+                    nullable(InputStream.class), anyMap(), any(JRDataSource.class)))
                 .thenAnswer(invocation -> {
                     capturedParams[0] = invocation.getArgument(1);
                     throw new RuntimeException("expected short-circuit");
@@ -202,7 +202,7 @@ class JasperFillerTest {
         try (MockedStatic<JasperFillManager> jfm = mockStatic(JasperFillManager.class)) {
             final JRDataSource[] capturedDataSource = new JRDataSource[1];
             jfm.when(() -> JasperFillManager.fillReport(
-                    any(InputStream.class), anyMap(), any(JRDataSource.class)))
+                    nullable(InputStream.class), anyMap(), any(JRDataSource.class)))
                 .thenAnswer(invocation -> {
                     capturedDataSource[0] = invocation.getArgument(2);
                     throw new RuntimeException("expected short-circuit");

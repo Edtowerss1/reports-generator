@@ -10,6 +10,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SuppressWarnings("null")
 class ConfigBasedTenantResolverTest {
 
     private TenantProperties tenantProperties;

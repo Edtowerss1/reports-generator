@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Tests for ReportOrchestrator with manual test doubles.
  */
+@SuppressWarnings("null")
 class ReportOrchestratorTest {
 
     private final StubAllowlistService allowlistService = new StubAllowlistService();

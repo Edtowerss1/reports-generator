@@ -4,11 +4,14 @@ import com.example.JaspertReport.config.TenantProperties;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 /**
- * Resolves the tenant from a validated token, enforces dedicated mode if active,
+ * Resolves the tenant from a validated token, enforces dedicated mode if
+ * active,
  * and populates {@link TenantContext} for the duration of the request.
  * <p>
  * SRP: tenant resolution and context lifecycle ONLY. Token format validation
@@ -33,7 +36,8 @@ public class TenantContextInitializer implements HandlerInterceptor {
     }
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    public boolean preHandle(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
+            @NonNull Object handler) throws Exception {
         String token = request.getHeader(TOKEN_HEADER);
 
         Tenant tenant = tenantResolver.resolve(token);
@@ -57,8 +61,8 @@ public class TenantContextInitializer implements HandlerInterceptor {
     }
 
     @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response,
-                                Object handler, Exception ex) throws Exception {
+    public void afterCompletion(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
+            @NonNull Object handler, @Nullable Exception ex) throws Exception {
         TenantContext.clear();
     }
 }
