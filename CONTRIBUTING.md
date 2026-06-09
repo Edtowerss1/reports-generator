@@ -49,7 +49,7 @@ Qué está pasando.
 ```bash
 # Clonar el repositorio
 git clone https://github.com/Edtowerss1/reports-generator.git
-cd JaspertReport
+cd reports-generator
 
 # Crear rama de feature
 git checkout -b feature/mi-feature

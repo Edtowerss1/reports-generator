@@ -57,7 +57,7 @@ Tradicionalmente, cada nuevo reporte requería:
        │  401 si inválido
        ▼
 ┌──────────────────────┐
-│ TenantContextInit    │  ← Resuelve tenant, enforces dedicated mode
+│ TenantContextInitializer    │  ← Resuelve tenant, enforces dedicated mode
 │ (Interceptor)        │     Popula TenantContext (ThreadLocal)
 └──────┬───────────────┘
        │  403 si no autorizado
@@ -79,7 +79,7 @@ JasperFiller                        ExporterRegistry
    ├─ TemplateResolver (tenant path)   ├─ getExporter(format)
    ├─ ReportCompiler (lazy)            │
    ├─ Por cada query:                  └─ → ReportExporter
-   │  ├─ DataSourceProvider.getTemplate(tenantId)
+   │  ├─ QueryExecutor: DataSourceProvider.getTemplate(tenantId) → JdbcTemplate
    │  ├─ → List<Map<String,Object>>
    │  └─ → JRMapCollectionDataSource
    │
@@ -179,7 +179,7 @@ cp src/main/resources/application.properties.example src/main/resources/applicat
 Edita `src/main/resources/application.properties`:
 
 ```properties
-# Modo de despliegue: centralized (multi-tenant) o dedicated (instancia única)
+# Modo de despliegue: centralized (multi-tenant) o dedicated (instancia por tenant)
 app.profile=centralized
 
 # Tenant por defecto
