@@ -1,4 +1,4 @@
-# Deployment Guide — JaspertReport
+# Deployment Guide — JasperReport
 
 Guía para desplegar el motor de reportes multi-tenant en producción.
 
@@ -21,12 +21,12 @@ Guía para desplegar el motor de reportes multi-tenant en producción.
 ./mvnw clean package -DskipTests
 ```
 
-El JAR se genera en `target/JaspertReport-0.0.1-SNAPSHOT.jar`.
+El JAR se genera en `target/JasperReport-0.0.1-SNAPSHOT.jar`.
 
 ### 2. Crear estructura de despliegue
 
 ```bash
-mkdir -p /opt/jaspertreport/reportes/{default,acme,corp}
+mkdir -p /opt/jasperreport/reportes/{default,acme,corp}
 ```
 
 ### 3. Configurar `application.properties`
@@ -37,7 +37,7 @@ app.profile=centralized
 
 # Tenant default
 app.tenants.default.service-token=${DEFAULT_TOKEN}
-app.tenants.default.reportes-ruta=/opt/jaspertreport/reportes/default/
+app.tenants.default.reportes-ruta=/opt/jasperreport/reportes/default/
 app.tenants.default.datasource.url=jdbc:mysql://db-host:3306/db_default?useSSL=false&serverTimezone=UTC
 app.tenants.default.datasource.username=${DEFAULT_DB_USER}
 app.tenants.default.datasource.password=${DEFAULT_DB_PASS}
@@ -47,7 +47,7 @@ app.tenants.default.allowed-formats=PDF,XLSX,DOCX,HTML
 
 # Tenant acme
 app.tenants.acme.service-token=${ACME_TOKEN}
-app.tenants.acme.reportes-ruta=/opt/jaspertreport/reportes/acme/
+app.tenants.acme.reportes-ruta=/opt/jasperreport/reportes/acme/
 app.tenants.acme.datasource.url=jdbc:mysql://db-host:3306/db_acme?useSSL=false&serverTimezone=UTC
 app.tenants.acme.datasource.username=${ACME_DB_USER}
 app.tenants.acme.datasource.password=${ACME_DB_PASS}
@@ -60,7 +60,7 @@ server.port=8080
 ### 4. Ejecutar
 
 ```bash
-java -jar JaspertReport-0.0.1-SNAPSHOT.jar
+java -jar JasperReport-0.0.1-SNAPSHOT.jar
 ```
 
 ---
@@ -74,7 +74,7 @@ app.profile=dedicated
 app.assigned-tenant=acme
 
 app.tenants.acme.service-token=${ACME_TOKEN}
-app.tenants.acme.reportes-ruta=/opt/jaspertreport/reportes/acme/
+app.tenants.acme.reportes-ruta=/opt/jasperreport/reportes/acme/
 app.tenants.acme.datasource.url=jdbc:mysql://db-acme:3306/db_acme
 # ...
 ```
@@ -154,7 +154,7 @@ Recordá: **no hay fallback a carpeta compartida**.
 ### Puerto en uso
 
 ```bash
-java -jar JaspertReport.jar --server.port=8081
+java -jar JasperReport.jar --server.port=8081
 ```
 
 ---
@@ -163,10 +163,10 @@ java -jar JaspertReport.jar --server.port=8081
 
 ```bash
 # DEBUG en runtime
-java -jar JaspertReport.jar --logging.level.com.example.JaspertReport=DEBUG
+java -jar JasperReport.jar --logging.level.com.example.JasperReport=DEBUG
 
 # Logs a archivo (en application.properties)
-logging.file.name=logs/jaspertreport.log
+logging.file.name=logs/jasperreport.log
 logging.file.max-size=10MB
 ```
 
@@ -177,8 +177,8 @@ Los logs incluyen `tenantId` para trazabilidad. **Nunca** se loguean credenciale
 ## 🏗️ Estructura de Despliegue
 
 ```
-/opt/jaspertreport/
-├── JaspertReport.jar
+/opt/jasperreport/
+├── JasperReport.jar
 ├── application.properties
 ├── reportes/
 │   ├── default/
@@ -190,5 +190,5 @@ Los logs incluyen `tenantId` para trazabilidad. **Nunca** se loguean credenciale
 │   └── corp/
 │       └── ReporteCartera.jrxml
 └── logs/
-    └── jaspertreport.log
+    └── jasperreport.log
 ```

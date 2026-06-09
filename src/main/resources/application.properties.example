@@ -1,4 +1,4 @@
-spring.application.name=JaspertReport
+spring.application.name=JasperReport
 
 # ==========================================
 # CONFIGURACIÓN MULTI-TENANT
@@ -35,4 +35,4 @@ server.port=${SERVER_PORT:8080}
 # LOGGING
 # ==========================================
 logging.level.root=INFO
-logging.level.com.example.JaspertReport=DEBUG
+logging.level.com.example.JasperReport=DEBUG

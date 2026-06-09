@@ -1,4 +1,4 @@
-<!-- Example: Subreport used by MasterReport for JaspertReport multi-tenant engine -->
+<!-- Example: Subreport used by MasterReport for JasperReport multi-tenant engine -->
 <jasperReport name="DetailReport" language="java" columnCount="1" pageWidth="555" pageHeight="842" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="c3d4e5f6-a7b8-9012-cdef-123456789012">
     <property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
     <parameter name="DS_DATOS" forPrompting="false" class="net.sf.jasperreports.engine.JRDataSource"/>

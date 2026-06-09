@@ -1,4 +1,4 @@
-# JaspertReport - Motor Genérico de Reportes Dinámicos
+# JasperReport - Motor Genérico de Reportes Dinámicos
 
 > Un motor de reportes escalable y extensible basado en **JasperReports** y **Spring Boot** que permite generar múltiples reportes sin cambios en el código.
 
@@ -17,7 +17,7 @@ Tradicionalmente, cada nuevo reporte requería:
 - ✗ Hardcodear queries SQL
 - ✗ Modificar código y desplegar
 
-**Con JaspertReport:**
+**Con JasperReport:**
 - ✅ Un endpoint genérico = N reportes
 - ✅ Queries dinámicas desde el cliente
 - ✅ Parámetros nombrados explícitamente
@@ -91,7 +91,7 @@ JasperFiller                        ExporterRegistry
 ### Estructura de Paquetes
 
 ```
-src/main/java/com/example/JaspertReport/
+src/main/java/com/example/JasperReport/
 ├── config/
 │   ├── TenantProperties.java             ← @ConfigurationProperties multi-tenant
 │   └── WebConfig.java                    ← Registro de interceptores
@@ -389,7 +389,7 @@ Ambos modos usan **el mismo binario**. Solo cambia la configuración.
 Crea una clase que implemente `ReportExporter`:
 
 ```java
-package com.example.JaspertReport.services.exporters;
+package com.example.JasperReport.services.exporters;
 
 import net.sf.jasperreports.engine.JasperPrint;
 import org.springframework.stereotype.Component;

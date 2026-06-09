@@ -1,4 +1,4 @@
-<!-- Example: Master report with subreport for JaspertReport multi-tenant engine -->
+<!-- Example: Master report with subreport for JasperReport multi-tenant engine -->
 <jasperReport name="MasterReport" language="java" columnCount="1" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="b2c3d4e5-f6a7-8901-bcde-f12345678901">
     <property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
     <parameter name="DS_EMPRESA" forPrompting="false" class="net.sf.jasperreports.engine.data.JRMapCollectionDataSource"/>

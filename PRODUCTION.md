@@ -1,4 +1,4 @@
-# Production Guide — JaspertReport
+# Production Guide — JasperReport
 
 Guía para operar el motor de reportes multi-tenant en producción.
 
@@ -22,7 +22,7 @@ Guía para operar el motor de reportes multi-tenant en producción.
               ┌──────────────┴──────────────┐
               │                             │
     ┌─────────▼────────┐          ┌────────▼─────────┐
-    │  JaspertReport    │          │  JaspertReport    │
+    │  JasperReport    │          │  JasperReport    │
     │  (centralized)    │          │  (dedicated)      │
     │  :8080            │          │  :8081            │
     │  multi-tenant     │          │  dedicated        │
@@ -129,11 +129,11 @@ curl http://localhost:8080/actuator/health
 
 ```properties
 # Nivel por paquete
-logging.level.com.example.JaspertReport=INFO
-logging.level.com.example.JaspertReport.tenant=DEBUG  # resolución de tenants
+logging.level.com.example.JasperReport=INFO
+logging.level.com.example.JasperReport.tenant=DEBUG  # resolución de tenants
 
 # Archivo rotativo
-logging.file.name=logs/jaspertreport.log
+logging.file.name=logs/jasperreport.log
 logging.logback.rollingpolicy.max-file-size=10MB
 logging.logback.rollingpolicy.max-history=30
 ```
@@ -155,7 +155,7 @@ logging.logback.rollingpolicy.max-history=30
 
 Respaldá el directorio de reportes de cada tenant:
 ```bash
-rsync -av /opt/jaspertreport/reportes/ backup@storage:/backups/reportes/
+rsync -av /opt/jasperreport/reportes/ backup@storage:/backups/reportes/
 ```
 
 ### Bases de datos

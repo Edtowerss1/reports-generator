@@ -1,4 +1,4 @@
-# Development Guide — JaspertReport
+# Development Guide — JasperReport
 
 Guía para desarrolladores: setup local, arquitectura, tests y extensibilidad.
 
@@ -46,7 +46,7 @@ app.profile=centralized
 
 app.tenants.default.service-token=dev-token-2026
 app.tenants.default.reportes-ruta=src/main/resources/reportes/
-app.tenants.default.datasource.url=jdbc:mysql://localhost:3306/jaspertreport_dev?useSSL=false&serverTimezone=UTC
+app.tenants.default.datasource.url=jdbc:mysql://localhost:3306/jasperreport_dev?useSSL=false&serverTimezone=UTC
 app.tenants.default.datasource.username=root
 app.tenants.default.datasource.password=root
 app.tenants.default.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
@@ -65,7 +65,7 @@ server.port=8080
 ## 🏗️ Estructura del Proyecto
 
 ```
-src/main/java/com/example/JaspertReport/
+src/main/java/com/example/JasperReport/
 ├── config/
 │   ├── TenantProperties.java             ← @ConfigurationProperties multi-tenant
 │   └── WebConfig.java                    ← Registro de interceptores
@@ -201,7 +201,7 @@ test: add tests for TenantResolver
 
 ```properties
 # Log detallado en application.properties
-logging.level.com.example.JaspertReport=DEBUG
+logging.level.com.example.JasperReport=DEBUG
 ```
 
 ---

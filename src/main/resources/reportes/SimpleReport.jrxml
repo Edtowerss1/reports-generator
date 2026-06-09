@@ -1,4 +1,4 @@
-<!-- Example template for JaspertReport multi-tenant engine -->
+<!-- Example template for JasperReport multi-tenant engine -->
 <jasperReport name="SimpleReport" language="java" columnCount="1" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="a1b2c3d4-e5f6-7890-abcd-ef1234567890">
     <property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
     <parameter name="DS_DATOS" forPrompting="false" class="net.sf.jasperreports.engine.JRDataSource"/>

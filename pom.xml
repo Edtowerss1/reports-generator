@@ -10,9 +10,9 @@
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.example</groupId>
-	<artifactId>JaspertReport</artifactId>
+	<artifactId>JasperReport</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>JaspertReport</name>
+	<name>JasperReport</name>
 	<description>Demo project for Spring Boot</description>
 	<url />
 	<licenses>
@@ -131,7 +131,7 @@
 				<configuration>
 					<!-- Asegurar que se genere un JAR ejecutable completo (fat jar) -->
 					<executable>true</executable>
-					<mainClass>com.example.JaspertReport.JaspertReportApplication</mainClass>
+					<mainClass>com.example.JasperReport.JasperReportApplication</mainClass>
 				</configuration>
 				<executions>
 					<execution>

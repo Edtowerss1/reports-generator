@@ -1,0 +1,16 @@
+package com.example.JasperReport;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+
+@SpringBootTest
+@ActiveProfiles("test")
+@SuppressWarnings("null")
+class JasperReportApplicationTests {
+
+	@Test
+	void contextLoads() {
+	}
+
+}

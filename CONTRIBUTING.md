@@ -1,6 +1,6 @@
 # Guía de Contribución
 
-¡Gracias por considerar contribuir a JaspertReport! Este documento proporciona pautas y direcciones para contribuir al proyecto.
+¡Gracias por considerar contribuir a JasperReport! Este documento proporciona pautas y direcciones para contribuir al proyecto.
 
 ## 📋 Código de Conducta
 
@@ -100,7 +100,7 @@ mvn clean install
 ```
 src/
 ├── main/
-│   ├── java/com/example/JaspertReport/
+│   ├── java/com/example/JasperReport/
 │   │   ├── config/             ← @ConfigurationProperties, WebConfig
 │   │   ├── controllers/        ← REST endpoints
 │   │   ├── tenant/             ← Multi-tenant: resolver, context, interceptors, datasource
@@ -111,7 +111,7 @@ src/
 │       ├── reportes/           ← Plantillas JRXML de ejemplo
 │       └── fonts/              ← Fuentes para JasperReports
 └── test/
-    └── java/com/example/JaspertReport/
+    └── java/com/example/JasperReport/
 ```
 
 ## 🏗️ Principios Arquitectónicos

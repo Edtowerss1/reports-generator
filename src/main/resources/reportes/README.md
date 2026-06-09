@@ -1,6 +1,6 @@
 # Example Report Templates
 
-These are **example templates** for the JaspertReport multi-tenant engine.
+These are **example templates** for the JasperReport multi-tenant engine.
 They demonstrate the two main report patterns:
 
 | Template | Type | Description |
